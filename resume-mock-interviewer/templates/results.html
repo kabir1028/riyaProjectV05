@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Results - AI Resume Mock Interviewer{% endblock %}
+
+{% block content %}
+<div class="animated-bg"></div>
+<div class="results-container">
+    {% if result_id %}
+    <script>
+        window.resultId = '{{ result_id }}';
+    </script>
+    {% endif %}
+    <h1 style="text-align: center; color: #1a1a1a; margin-bottom: 3rem; font-size: 3rem; font-weight: 700;">Professional Interview <span style="color: #22c55e;">Performance Report</span></h1>
+    
+    <div class="score-card">
+        <div class="score-header">
+            <div class="score-main">
+                <h2 style="position: relative; z-index: 2; margin-bottom: 0.5rem;">Your Performance Score</h2>
+                <div class="score-number" id="scoreNumber">--</div>
+                <p style="position: relative; z-index: 2; font-size: 1.2rem; margin-bottom: 1rem;">out of 100</p>
+                <div class="score-grade" id="scoreGrade">Calculating...</div>
+            </div>
+            
+            <div class="score-visual">
+                <div class="progress-ring" style="position: relative; z-index: 2;">
+                    <svg class="progress-ring" width="180" height="180">
+                        <circle class="progress-ring-circle" />
+                        <circle class="progress-ring-progress" id="progressCircle" />
+                    </svg>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.3rem; font-weight: bold;" id="progressText">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="score-insights">
+            <div class="insight-grid">
+                <div class="insight-item">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Accuracy</div>
+                        <div class="insight-value" id="accuracyInsight">--</div>
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">⚡</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Speed</div>
+                        <div class="insight-value" id="speedInsight">Optimal</div>
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Trend</div>
+                        <div class="insight-value" id="trendInsight">Improving</div>
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">🏆</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Ranking</div>
+                        <div class="insight-value" id="rankingInsight">--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="score-breakdown">
+                <h4 style="color: #1a1a1a; margin-bottom: 1rem; font-size: 1.1rem;">Performance Breakdown</h4>
+                <div class="breakdown-item">
+                    <span>Technical Knowledge</span>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-fill" id="technicalFill" style="width: 0%;"></div>
+                    </div>
+                    <span id="technicalScore">--</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Communication</span>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-fill" id="communicationFill" style="width: 0%;"></div>
+                    </div>
+                    <span id="communicationScore">--</span>
+                </div>
+                <div class="breakdown-item">
+                    <span>Problem Solving</span>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-fill" id="problemSolvingFill" style="width: 0%;"></div>
+                    </div>
+                    <span id="problemSolvingScore">--</span>
+                </div>
+            </div>
+            
+            <div class="quick-tips">
+                <h4 style="color: #1a1a1a; margin-bottom: 1rem; font-size: 1.1rem;">💡 Quick Improvement Tips</h4>
+                <div class="tips-list" id="quickTips">
+                    <div class="tip-item">Loading personalized tips...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="analytics-compact" style="--delay: 0.2s;">
+        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600;">📊 Performance <span style="color: #22c55e;">Analytics</span></h3>
+        <div class="analytics-grid">
+            <div class="analytics-stats">
+                <div class="stat-row">
+                    <div class="stat-compact">
+                        <span class="stat-number" id="correctAnswers">0</span>
+                        <span class="stat-label">Correct</span>
+                    </div>
+                    <div class="stat-compact">
+                        <span class="stat-number" id="accuracy">0%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                    <div class="stat-compact">
+                        <span class="stat-number" id="skillLevel">--</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-compact">
+                <canvas id="performanceChart" class="chart-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="comparison-card" style="--delay: 0.3s;">
+        <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">📈 Performance <span style="color: #22c55e;">Benchmarking</span></h3>
+        <div class="comparison-grid">
+            <div class="comparison-item">
+                <div class="comparison-header">
+                    <span class="comparison-title">Industry Average</span>
+                    <span class="comparison-score">65%</span>
+                </div>
+                <div class="comparison-bar">
+                    <div class="comparison-fill" style="width: 65%; background: #94a3b8;"></div>
+                </div>
+            </div>
+            <div class="comparison-item">
+                <div class="comparison-header">
+                    <span class="comparison-title">Your Performance</span>
+                    <span class="comparison-score" id="yourScore">--</span>
+                </div>
+                <div class="comparison-bar">
+                    <div class="comparison-fill" id="yourScoreFill" style="width: 0%; background: #22c55e;"></div>
+                </div>
+            </div>
+            <div class="comparison-item">
+                <div class="comparison-header">
+                    <span class="comparison-title">Top 10% Performers</span>
+                    <span class="comparison-score">90%</span>
+                </div>
+                <div class="comparison-bar">
+                    <div class="comparison-fill" style="width: 90%; background: #f59e0b;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="feedback-card" style="--delay: 0.4s;">
+        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 600;">📈 Professional <span style="color: #22c55e;">Performance Analysis</span></h3>
+        <div class="feedback-grid">
+            <div class="feedback-section">
+                <h4 style="color: #22c55e; margin-bottom: 1rem; font-size: 1.2rem;">🎯 Strengths Identified</h4>
+                <ul id="strengthsList" style="color: #4a5568; line-height: 1.6;">
+                    <li>Loading strengths analysis...</li>
+                </ul>
+            </div>
+            <div class="feedback-section">
+                <h4 style="color: #f59e0b; margin-bottom: 1rem; font-size: 1.2rem;">💡 Growth Opportunities</h4>
+                <ul id="improvementsList" style="color: #4a5568; line-height: 1.6;">
+                    <li>Loading improvement areas...</li>
+                </ul>
+            </div>
+        </div>
+        <div class="detailed-feedback">
+            <h4 style="color: #1a1a1a; margin: 2rem 0 1rem 0; font-size: 1.3rem; font-weight: 600;">📝 Comprehensive Assessment</h4>
+            <p id="feedbackText" style="color: #4a5568; font-size: 1.1rem; line-height: 1.7; background: rgba(34, 197, 94, 0.05); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #22c55e;">Loading comprehensive feedback analysis...</p>
+        </div>
+    </div>
+    
+    <div class="qa-review-card" style="--delay: 0.6s;">
+        <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">📝 Detailed <span style="color: #22c55e;">Question & Answer Review</span></h3>
+        <div class="qa-summary">
+            <div class="qa-summary-item">
+                <span class="qa-summary-number" id="correctCount">0</span>
+                <span class="qa-summary-label">Correct</span>
+            </div>
+            <div class="qa-summary-item">
+                <span class="qa-summary-number" id="partialCount">0</span>
+                <span class="qa-summary-label">Partial</span>
+            </div>
+            <div class="qa-summary-item">
+                <span class="qa-summary-number" id="incorrectCount">0</span>
+                <span class="qa-summary-label">Incorrect</span>
+            </div>
+        </div>
+        <div id="qaReview">
+            <!-- Q&A review will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="companies-card" style="--delay: 0.8s;">
+        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 600;">🏢 Recommended <span style="color: #22c55e;">Career Opportunities</span></h3>
+        <p style="color: #4a5568; margin-bottom: 2rem; font-size: 1.1rem;">Based on your professional performance and skill assessment, these companies align with your current capabilities and career trajectory:</p>
+        <div class="companies-list" id="companiesList">
+            <!-- Companies will be loaded here -->
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+        <a href="/start-interview" class="btn btn-primary" style="margin-right: 1rem;">Take Another Interview</a>
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}

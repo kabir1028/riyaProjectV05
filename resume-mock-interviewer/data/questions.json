@@ -1,0 +1,701 @@
+{
+  "Software Engineer": {
+    "Beginner": [
+      {
+        "question": "What is the difference between a stack and a queue?",
+        "type": "multiple-choice",
+        "options": [
+          "Stack is FIFO, Queue is LIFO",
+          "Stack is LIFO, Queue is FIFO",
+          "Both are FIFO",
+          "Both are LIFO"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "What is object-oriented programming?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which of the following is NOT a programming paradigm?",
+        "type": "multiple-choice",
+        "options": [
+          "Object-Oriented",
+          "Functional",
+          "Procedural",
+          "Database"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "Explain the concept of recursion with an example.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the time complexity of binary search?",
+        "type": "multiple-choice",
+        "options": [
+          "O(n)",
+          "O(log n)",
+          "O(n²)",
+          "O(1)"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "What is the difference between HTTP and HTTPS?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which data structure uses LIFO principle?",
+        "type": "multiple-choice",
+        "options": [
+          "Queue",
+          "Stack",
+          "Array",
+          "Linked List"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain what version control is and why it's important.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What does SQL stand for?",
+        "type": "multiple-choice",
+        "options": [
+          "Structured Query Language",
+          "Simple Query Language",
+          "Standard Query Language",
+          "System Query Language"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "question": "Describe the difference between frontend and backend development.",
+        "type": "short-answer"
+      }
+    ],
+    "Intermediate": [
+      {
+        "question": "What is the difference between abstract classes and interfaces?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which design pattern ensures only one instance of a class exists?",
+        "type": "multiple-choice",
+        "options": [
+          "Factory",
+          "Observer",
+          "Singleton",
+          "Strategy"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain the concept of database normalization.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the space complexity of merge sort?",
+        "type": "multiple-choice",
+        "options": [
+          "O(1)",
+          "O(log n)",
+          "O(n)",
+          "O(n log n)"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Describe the differences between REST and GraphQL APIs.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which of these is NOT a SOLID principle?",
+        "type": "multiple-choice",
+        "options": [
+          "Single Responsibility",
+          "Open/Closed",
+          "Dependency Inversion",
+          "Code Reusability"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "Explain the concept of microservices architecture.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main advantage of using indexes in databases?",
+        "type": "multiple-choice",
+        "options": [
+          "Reduce storage space",
+          "Improve query performance",
+          "Ensure data integrity",
+          "Enable transactions"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Describe the difference between synchronous and asynchronous programming.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What does ACID stand for in database transactions?",
+        "type": "multiple-choice",
+        "options": [
+          "Atomicity, Consistency, Isolation, Durability",
+          "Accuracy, Consistency, Integrity, Durability",
+          "Atomicity, Concurrency, Isolation, Durability",
+          "Accuracy, Concurrency, Integrity, Durability"
+        ],
+        "correctAnswer": 0
+      }
+    ],
+    "Advanced": [
+      {
+        "question": "Explain the CAP theorem and its implications for distributed systems.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which consensus algorithm is commonly used in blockchain?",
+        "type": "multiple-choice",
+        "options": [
+          "Raft",
+          "Paxos",
+          "Proof of Work",
+          "Byzantine Fault Tolerance"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Describe the differences between horizontal and vertical scaling.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the time complexity of finding strongly connected components using Tarjan's algorithm?",
+        "type": "multiple-choice",
+        "options": [
+          "O(V + E)",
+          "O(V²)",
+          "O(V log V)",
+          "O(E log V)"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "question": "Explain the concept of eventual consistency in distributed systems.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which data structure is most efficient for implementing a priority queue?",
+        "type": "multiple-choice",
+        "options": [
+          "Array",
+          "Linked List",
+          "Binary Heap",
+          "Hash Table"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Describe the differences between optimistic and pessimistic locking.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main purpose of a load balancer?",
+        "type": "multiple-choice",
+        "options": [
+          "Data encryption",
+          "Request distribution",
+          "Database optimization",
+          "Code compilation"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of containerization and its benefits.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which pattern is best for handling cross-cutting concerns in applications?",
+        "type": "multiple-choice",
+        "options": [
+          "Factory",
+          "Observer",
+          "Aspect-Oriented Programming",
+          "Command"
+        ],
+        "correctAnswer": 2
+      }
+    ]
+  },
+  "AI Scientist": {
+    "Beginner": [
+      {
+        "question": "What is the difference between supervised and unsupervised learning?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which algorithm is commonly used for linear regression?",
+        "type": "multiple-choice",
+        "options": [
+          "K-means",
+          "Decision Tree",
+          "Gradient Descent",
+          "Random Forest"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain what overfitting means in machine learning.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What does CNN stand for in deep learning?",
+        "type": "multiple-choice",
+        "options": [
+          "Convolutional Neural Network",
+          "Cascading Neural Network",
+          "Circular Neural Network",
+          "Conditional Neural Network"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "question": "What is the purpose of a validation set in machine learning?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which activation function is commonly used in hidden layers?",
+        "type": "multiple-choice",
+        "options": [
+          "Sigmoid",
+          "ReLU",
+          "Linear",
+          "Step"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of feature engineering.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main goal of clustering algorithms?",
+        "type": "multiple-choice",
+        "options": [
+          "Classification",
+          "Regression",
+          "Grouping similar data",
+          "Dimensionality reduction"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is cross-validation and why is it important?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which metric is commonly used for classification problems?",
+        "type": "multiple-choice",
+        "options": [
+          "Mean Squared Error",
+          "Accuracy",
+          "R-squared",
+          "Mean Absolute Error"
+        ],
+        "correctAnswer": 1
+      }
+    ],
+    "Intermediate": [
+      {
+        "question": "Explain the vanishing gradient problem in deep neural networks.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which optimization algorithm adapts learning rates for each parameter?",
+        "type": "multiple-choice",
+        "options": [
+          "SGD",
+          "Adam",
+          "Momentum",
+          "RMSprop"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Describe the difference between bagging and boosting ensemble methods.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main advantage of using LSTM over vanilla RNN?",
+        "type": "multiple-choice",
+        "options": [
+          "Faster training",
+          "Less parameters",
+          "Better long-term memory",
+          "Simpler architecture"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain the concept of transfer learning and its applications.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which technique is used to prevent overfitting in neural networks?",
+        "type": "multiple-choice",
+        "options": [
+          "Dropout",
+          "Batch normalization",
+          "Data augmentation",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the difference between precision and recall?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which algorithm is best for handling imbalanced datasets?",
+        "type": "multiple-choice",
+        "options": [
+          "Linear Regression",
+          "K-means",
+          "SMOTE",
+          "PCA"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain the concept of attention mechanism in neural networks.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main purpose of batch normalization?",
+        "type": "multiple-choice",
+        "options": [
+          "Reduce overfitting",
+          "Stabilize training",
+          "Increase model capacity",
+          "Reduce computation"
+        ],
+        "correctAnswer": 1
+      }
+    ],
+    "Advanced": [
+      {
+        "question": "Explain the architecture and training process of Generative Adversarial Networks (GANs).",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which technique is used in Transformer models for position encoding?",
+        "type": "multiple-choice",
+        "options": [
+          "Learned embeddings",
+          "Sinusoidal encoding",
+          "Random initialization",
+          "One-hot encoding"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Describe the concept of few-shot learning and its challenges.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main innovation in ResNet architecture?",
+        "type": "multiple-choice",
+        "options": [
+          "Dropout layers",
+          "Skip connections",
+          "Attention mechanism",
+          "Batch normalization"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the difference between model-based and model-free reinforcement learning.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which loss function is commonly used for training GANs?",
+        "type": "multiple-choice",
+        "options": [
+          "Cross-entropy",
+          "Mean squared error",
+          "Wasserstein loss",
+          "Hinge loss"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Describe the concept of neural architecture search (NAS).",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main advantage of using self-attention in Transformers?",
+        "type": "multiple-choice",
+        "options": [
+          "Reduced parameters",
+          "Parallel computation",
+          "Better generalization",
+          "Faster inference"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of continual learning and catastrophic forgetting.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which technique is used to improve training stability in GANs?",
+        "type": "multiple-choice",
+        "options": [
+          "Spectral normalization",
+          "Progressive growing",
+          "Feature matching",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      }
+    ]
+  },
+  "Data Scientist": {
+    "Beginner": [
+      {
+        "question": "What is the difference between correlation and causation?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which measure of central tendency is most affected by outliers?",
+        "type": "multiple-choice",
+        "options": [
+          "Mean",
+          "Median",
+          "Mode",
+          "Range"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "question": "Explain what a p-value represents in statistical testing.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What does ETL stand for in data processing?",
+        "type": "multiple-choice",
+        "options": [
+          "Extract, Transform, Load",
+          "Evaluate, Test, Learn",
+          "Execute, Track, Log",
+          "Estimate, Train, Launch"
+        ],
+        "correctAnswer": 0
+      },
+      {
+        "question": "What is the purpose of data visualization?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which type of chart is best for showing correlation between two variables?",
+        "type": "multiple-choice",
+        "options": [
+          "Bar chart",
+          "Pie chart",
+          "Scatter plot",
+          "Line chart"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain the concept of sampling bias.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the first step in the data science process?",
+        "type": "multiple-choice",
+        "options": [
+          "Data cleaning",
+          "Model building",
+          "Problem definition",
+          "Data visualization"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the difference between structured and unstructured data?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which Python library is commonly used for data manipulation?",
+        "type": "multiple-choice",
+        "options": [
+          "NumPy",
+          "Pandas",
+          "Matplotlib",
+          "Scikit-learn"
+        ],
+        "correctAnswer": 1
+      }
+    ],
+    "Intermediate": [
+      {
+        "question": "Explain the concept of A/B testing and its importance in data science.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which statistical test would you use to compare means of two groups?",
+        "type": "multiple-choice",
+        "options": [
+          "Chi-square test",
+          "T-test",
+          "ANOVA",
+          "Correlation test"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Describe the difference between Type I and Type II errors.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main assumption of linear regression?",
+        "type": "multiple-choice",
+        "options": [
+          "Non-linear relationship",
+          "Linear relationship between variables",
+          "Categorical variables only",
+          "No relationship between variables"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of feature selection and its methods.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which technique is used to handle missing data?",
+        "type": "multiple-choice",
+        "options": [
+          "Imputation",
+          "Deletion",
+          "Interpolation",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the difference between supervised and unsupervised learning in the context of data science?",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which metric is best for evaluating a regression model?",
+        "type": "multiple-choice",
+        "options": [
+          "Accuracy",
+          "Precision",
+          "R-squared",
+          "F1-score"
+        ],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Explain the concept of dimensionality reduction and when to use it.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the purpose of cross-validation in model evaluation?",
+        "type": "multiple-choice",
+        "options": [
+          "Increase model complexity",
+          "Reduce overfitting",
+          "Speed up training",
+          "Improve accuracy"
+        ],
+        "correctAnswer": 1
+      }
+    ],
+    "Advanced": [
+      {
+        "question": "Explain the concept of causal inference and its challenges in observational data.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which method is used to estimate treatment effects in observational studies?",
+        "type": "multiple-choice",
+        "options": [
+          "Propensity score matching",
+          "Instrumental variables",
+          "Difference-in-differences",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "Describe the concept of time series forecasting and its key components.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main challenge in dealing with high-dimensional data?",
+        "type": "multiple-choice",
+        "options": [
+          "Computational complexity",
+          "Curse of dimensionality",
+          "Storage requirements",
+          "Visualization difficulty"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of ensemble methods and their advantages.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which technique is used for anomaly detection in large datasets?",
+        "type": "multiple-choice",
+        "options": [
+          "Isolation Forest",
+          "One-class SVM",
+          "Local Outlier Factor",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      },
+      {
+        "question": "Describe the challenges and solutions for handling big data in data science projects.",
+        "type": "short-answer"
+      },
+      {
+        "question": "What is the main advantage of using Bayesian methods in data science?",
+        "type": "multiple-choice",
+        "options": [
+          "Faster computation",
+          "Uncertainty quantification",
+          "Better accuracy",
+          "Simpler interpretation"
+        ],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Explain the concept of feature engineering for time series data.",
+        "type": "short-answer"
+      },
+      {
+        "question": "Which approach is best for handling imbalanced datasets in classification?",
+        "type": "multiple-choice",
+        "options": [
+          "Oversampling minority class",
+          "Undersampling majority class",
+          "Cost-sensitive learning",
+          "All of the above"
+        ],
+        "correctAnswer": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - AI Resume Mock Interviewer{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 style="text-align: center; color: #1a1a1a; margin-bottom: 2rem; font-weight: 600;">Create <span style="color: #22c55e;">Professional Account</span></h2>
+    
+    <form id="signupForm">
+        <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" name="fullname" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 1rem; color: #4a5568;">
+        Already have an account? <a href="/login" style="color: #22c55e; text-decoration: none; font-weight: 500;">Sign in here</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('signupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        Toast.error('Passwords do not match! Please check and try again.');
+        return;
+    }
+    
+    Toast.success('Account creation will be available soon! Redirecting to interview...');
+    setTimeout(() => {
+        window.location.href = '/start-interview';
+    }, 2000);
+});
+</script>
+{% endblock %}

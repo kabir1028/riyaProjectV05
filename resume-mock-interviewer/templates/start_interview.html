@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Start Interview - AI Resume Mock Interviewer{% endblock %}
+
+{% block content %}
+<div class="animated-bg"></div>
+<div class="particles" id="particles"></div>
+
+<div class="container" style="margin-top: 2rem;">
+    <h1 style="text-align: center; color: #1a1a1a; margin-bottom: 4rem; font-size: 3rem; animation: fadeInUp 1s ease-out; font-weight: 700;">Start Your <span style="color: #22c55e;">Professional</span> Mock Interview</h1>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1200px; margin: 0 auto;">
+        
+        <!-- AI Voice Interview Section -->
+        <div class="feature-card glass" style="animation: slideInLeft 0.8s ease-out;">
+            <h2 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">🎤 AI Voice Interview</h2>
+            <p style="margin-bottom: 2.5rem; color: #4a5568; line-height: 1.6;">Experience a realistic voice-based interview with our advanced AI interviewer. Practice your verbal communication skills, pronunciation, and real-time response capabilities in a professional setting.</p>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="showComingSoon()">Start Voice Interview</button>
+        </div>
+        
+        <!-- Resume Upload Section -->
+        <div class="feature-card glass" style="animation: slideInRight 0.8s ease-out;">
+            <h2 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">📄 Resume-Based Interview</h2>
+            
+            <form id="interviewSetupForm">
+                <div class="form-group">
+                    <label for="resume" style="color: #1a1a1a;">Upload Resume (Required) <span style="color: #ef4444;">*</span></label>
+                    <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required style="background: rgba(255, 255, 255, 0.8); border: 2px dashed rgba(34, 197, 94, 0.3); color: #1a1a1a;">
+                    <small style="color: #4a5568;">Required: PDF, DOC, DOCX - Essential for personalized interview questions</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role" style="color: #1a1a1a;">Select Target Job Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">Choose a role...</option>
+                        <option value="Software Engineer">💻 Software Engineer</option>
+                        <option value="AI Scientist">🤖 AI Scientist</option>
+                        <option value="Data Scientist">📊 Data Scientist</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="difficulty" style="color: #1a1a1a;">Select Experience Level</label>
+                    <select id="difficulty" name="difficulty" required>
+                        <option value="">Choose difficulty...</option>
+                        <option value="Beginner">🟢 Beginner</option>
+                        <option value="Intermediate">🟡 Intermediate</option>
+                        <option value="Advanced">🔴 Advanced</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Start Interview 🚀</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Interview Tips Section -->
+    <div class="feature-card glass" style="margin-top: 4rem; animation: fadeInUp 1s ease-out 0.5s both;">
+        <h3 style="text-align: center; color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">💡 Professional Interview <span style="color: #22c55e;">Success Tips</span></h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div style="text-align: center; padding: 1.5rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">⏰</div>
+                <h4 style="color: #1a1a1a; margin-bottom: 0.5rem; font-weight: 600;">Strategic Thinking</h4>
+                <p style="color: #4a5568; font-size: 0.9rem;">Take time to analyze each question thoroughly and structure your responses professionally</p>
+            </div>
+            <div style="text-align: center; padding: 1.5rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">💭</div>
+                <h4 style="color: #1a1a1a; margin-bottom: 0.5rem; font-weight: 600;">Comprehensive Responses</h4>
+                <p style="color: #4a5568; font-size: 0.9rem;">Provide detailed, well-structured answers with specific examples and measurable outcomes</p>
+            </div>
+            <div style="text-align: center; padding: 1.5rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+                <h4 style="color: #1a1a1a; margin-bottom: 0.5rem; font-weight: 600;">Professional Focus</h4>
+                <p style="color: #4a5568; font-size: 0.9rem;">Maintain clarity and relevance in all responses while demonstrating industry knowledge</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Create floating particles
+function createStartParticles() {
+    const particles = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particles.appendChild(particle);
+    }
+}
+
+function showComingSoon() {
+    Toast.info('Voice interview feature is under development. Try our comprehensive text-based interview for now!');
+}
+
+document.addEventListener('DOMContentLoaded', createStartParticles);
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('interviewSetupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const resume = document.getElementById('resume').files[0];
+    const role = document.getElementById('role').value;
+    const difficulty = document.getElementById('difficulty').value;
+    
+    if (!resume) {
+        Toast.error('Please upload your resume to continue with the interview.');
+        return;
+    }
+    
+    if (!role || !difficulty) {
+        Toast.warning('Please select both job role and experience level.');
+        return;
+    }
+    
+    Toast.success('Interview setup complete! Redirecting to questions...');
+    
+    // Store selections in sessionStorage
+    sessionStorage.setItem('selectedRole', role);
+    sessionStorage.setItem('selectedDifficulty', difficulty);
+    sessionStorage.setItem('resumeName', resume.name);
+    
+    // Redirect to interview page
+    setTimeout(() => {
+        window.location.href = '/interview';
+    }, 1500);
+});
+</script>
+{% endblock %}
