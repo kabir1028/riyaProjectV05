@@ -414,6 +414,9 @@ def submit_answers():
         # Store in Supabase
         result_id = str(uuid.uuid4())
         
+        # Get user ID from request or session
+        user_id = request.json.get('user_id') or (session.get('user', {}).get('id') if 'user' in session else None)
+        
         data = {
             'id': result_id,
             'score': score,
@@ -421,7 +424,8 @@ def submit_answers():
             'companies': json.dumps(companies),
             'answers': json.dumps(answers),
             'questions': json.dumps(questions),
-            'user_id': session.get('user', {}).get('id') if 'user' in session else None
+            'user_id': user_id,
+            'created_at': datetime.now().isoformat()
         }
         
         response = supabase.insert('results', data)

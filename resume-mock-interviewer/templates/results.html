@@ -207,9 +207,9 @@
         </div>
     </div>
     
-    <div style="text-align: center; margin-top: 3rem;">
-        <a href="/start-interview" class="btn btn-primary" style="margin-right: 1rem;">Take Another Interview</a>
-        <button id="viewHistoryBtn" class="btn" style="background: #3b82f6; color: white; margin-right: 1rem;">📊 View History</button>
+    <div style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="/start-interview" class="btn btn-primary">Take Another Interview</a>
+        <button id="viewHistoryBtn" class="btn" style="background: #3b82f6; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer;">📊 View History</button>
         <a href="/" class="btn btn-secondary">Back to Home</a>
     </div>
 </div>
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p style="color: #6b7280; margin-bottom: 2rem;">Please login to view your interview history</p>
                         <div style="display: flex; gap: 1rem; justify-content: center;">
                             <a href="/login" style="background: #22c55e; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px;">Login</a>
-                            <button onclick="this.closest('div').parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+                            <button onclick="this.closest('div').parentElement.parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">Cancel</button>
                         </div>
                     </div>
                 </div>

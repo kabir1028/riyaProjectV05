@@ -142,11 +142,12 @@ function displayHistory(history) {
     historyList.style.display = 'block';
     emptyState.style.display = 'none';
 
-    historyList.innerHTML = history.map(item => `
+    historyList.innerHTML = history.map((item, index) => `
         <div class="history-item" style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid ${getScoreColor(item.score)};">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                 <div>
                     <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="background: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">Interview #${index + 1}</span>
                         <span style="font-size: 1.5rem;">${getScoreEmoji(item.score)}</span>
                         <span style="font-size: 1.5rem; font-weight: bold; color: ${getScoreColor(item.score)};">${item.score}%</span>
                     </div>

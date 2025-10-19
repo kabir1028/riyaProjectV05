@@ -282,7 +282,8 @@ async function submitAnswers() {
                 answers: answers,
                 role: selectedRole,
                 difficulty: selectedDifficulty,
-                questions: questions
+                questions: questions,
+                user_id: JSON.parse(localStorage.getItem('user') || '{}').user?.id || null
             })
         });
         
