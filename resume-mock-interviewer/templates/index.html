@@ -1,6 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script>
+// Handle password reset redirect on home page
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const type = urlParams.get('type');
+    
+    // If this is a password reset, redirect to reset page
+    if (token && type === 'recovery') {
+        window.location.href = `/reset-password?token=${token}&type=recovery`;
+        return;
+    }
+});
+</script>
 <!-- Hero Section -->
 <section class="hero">
     <div class="container">

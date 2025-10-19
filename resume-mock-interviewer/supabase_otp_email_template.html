@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset OTP - InterviewAce</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f8f9fa; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header { 
+            background: #f59e0b; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .header h1 { 
+            color: white; 
+            font-size: 24px; 
+            margin: 0;
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .message { 
+            font-size: 16px; 
+            color: #333; 
+            line-height: 1.6; 
+            margin-bottom: 30px; 
+        }
+        .otp-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #f59e0b;
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-radius: 10px;
+            letter-spacing: 5px;
+            display: inline-block;
+        }
+        .footer { 
+            background: #333; 
+            padding: 20px; 
+            text-align: center; 
+            color: white;
+            font-size: 14px;
+        }
+        .note {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 InterviewAce</h1>
+        </div>
+        
+        <div class="content">
+            <div class="message">
+                <p>Hello,</p>
+                <p>You have requested to reset your InterviewAce account password.</p>
+                <p>Your One-Time Password (OTP) is:</p>
+            </div>
+            
+            <div class="otp-container">
+                <div class="otp-code">{{ .Data.otp }}</div>
+            </div>
+            
+            <div class="note">
+                <p><strong>Important:</strong></p>
+                <ul>
+                    <li>This OTP will expire in 10 minutes</li>
+                    <li>Do not share this OTP with anyone</li>
+                    <li>If you did not request this, please ignore this email</li>
+                    <li>Enter this OTP on the verification page to continue</li>
+                </ul>
+            </div>
+            
+            <div class="note">
+                <p><strong>Need help?</strong> Contact us at support@mockinterviewer.com</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>InterviewAce - AI Interview Platform</p>
+            <p>© 2025 InterviewAce. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

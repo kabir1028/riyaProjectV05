@@ -5,11 +5,22 @@ class Toast {
         toast.className = `toast toast-${type}`;
         
         const icon = this.getIcon(type);
-        toast.innerHTML = `
-            <div class="toast-icon">${icon}</div>
-            <div class="toast-message">${message}</div>
-            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-        `;
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'toast-icon';
+        iconDiv.textContent = icon;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'toast-message';
+        messageDiv.textContent = message;
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.textContent = '×';
+        closeBtn.onclick = () => toast.remove();
+        
+        toast.appendChild(iconDiv);
+        toast.appendChild(messageDiv);
+        toast.appendChild(closeBtn);
         
         document.body.appendChild(toast);
         

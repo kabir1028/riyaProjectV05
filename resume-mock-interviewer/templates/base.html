@@ -29,11 +29,25 @@
                     <span class="nav-icon">🚀</span>
                     <span class="nav-text">Start Interview</span>
                 </a>
-                <a href="/login" class="nav-item">
+                <!-- Logged in user menu -->
+                <a href="/profile" class="nav-item" id="profileNav" style="display: none;">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">Profile</span>
+                </a>
+                <a href="/history" class="nav-item" id="historyNav" style="display: none;">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">History</span>
+                </a>
+                <button class="nav-item" id="logoutBtn" style="display: none; background: none; border: none; cursor: pointer;">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-text">Logout</span>
+                </button>
+                <!-- Guest user menu -->
+                <a href="/login" class="nav-item" id="loginNav">
                     <span class="nav-icon">🔐</span>
                     <span class="nav-text">Login</span>
                 </a>
-                <div class="nav-cta">
+                <div class="nav-cta" id="signupNav">
                     <a href="/signup" class="btn-nav">Get Started Free</a>
                 </div>
             </div>
@@ -63,6 +77,39 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script>
+        // Check login status and update navbar
+        function updateNavbar() {
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const isLoggedIn = user && user.access_token;
+            
+            // Show/hide elements based on login status
+            document.getElementById('profileNav').style.display = isLoggedIn ? 'flex' : 'none';
+            document.getElementById('historyNav').style.display = isLoggedIn ? 'flex' : 'none';
+            document.getElementById('logoutBtn').style.display = isLoggedIn ? 'flex' : 'none';
+            document.getElementById('loginNav').style.display = isLoggedIn ? 'none' : 'flex';
+            document.getElementById('signupNav').style.display = isLoggedIn ? 'none' : 'block';
+        }
+        
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', async function() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                localStorage.removeItem('user');
+                updateNavbar();
+                Toast.success('Logged out successfully');
+                if (window.location.pathname === '/profile' || window.location.pathname === '/history') {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                Toast.error('Logout failed');
+            }
+        });
+        
+        // Update navbar on page load
+        document.addEventListener('DOMContentLoaded', updateNavbar);
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

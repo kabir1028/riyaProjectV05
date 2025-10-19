@@ -209,6 +209,7 @@
     
     <div style="text-align: center; margin-top: 3rem;">
         <a href="/start-interview" class="btn btn-primary" style="margin-right: 1rem;">Take Another Interview</a>
+        <button id="viewHistoryBtn" class="btn" style="background: #3b82f6; color: white; margin-right: 1rem;">📊 View History</button>
         <a href="/" class="btn btn-secondary">Back to Home</a>
     </div>
 </div>
@@ -217,4 +218,35 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/results.js') }}"></script>
+<script>
+// View History button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+    
+    viewHistoryBtn.addEventListener('click', function() {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        
+        if (!user || !user.access_token) {
+            // Show login modal
+            const modal = document.createElement('div');
+            modal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 400px; margin: 1rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+                        <h3 style="margin-bottom: 1rem;">Login Required</h3>
+                        <p style="color: #6b7280; margin-bottom: 2rem;">Please login to view your interview history</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <a href="/login" style="background: #22c55e; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px;">Login</a>
+                            <button onclick="this.closest('div').parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        } else {
+            window.location.href = '/history';
+        }
+    });
+});
+</script>
 {% endblock %}

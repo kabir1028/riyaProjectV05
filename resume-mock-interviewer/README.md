@@ -10,18 +10,6 @@
 
 **InterviewAce** is a comprehensive AI-powered mock interview platform designed to help job seekers practice and improve their interview skills. The platform provides personalized interview questions, real-time feedback, performance analytics, and career recommendations to enhance interview preparation.
 
-## 📊 Project Statistics
-
-```mermaid
-graph TD
-    A[Project Stats] --> B[9 Development Days]
-    A --> C[3,500+ Lines of Code]
-    A --> D[15+ Files Created]
-    A --> E[12 Major Features]
-    A --> F[25+ Bug Fixes]
-    A --> G[100% Feature Complete]
-```
-
 ## 🌟 Key Features
 
 ```mermaid

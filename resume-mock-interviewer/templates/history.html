@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Interview History - InterviewAce{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <div class="page-header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="color: #1a1a1a; font-size: 2.5rem; margin-bottom: 1rem;">
+            📊 Interview <span style="color: #22c55e;">History</span>
+        </h1>
+        <p style="color: #6b7280; font-size: 1.1rem;">
+            Track your progress and review past interview performances
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="stat-card" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 2rem; border-radius: 15px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎯</div>
+            <div style="font-size: 2rem; font-weight: bold;" id="totalInterviews">0</div>
+            <div style="opacity: 0.9;">Total Interviews</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 2rem; border-radius: 15px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📈</div>
+            <div style="font-size: 2rem; font-weight: bold;" id="avgScore">0%</div>
+            <div style="opacity: 0.9;">Average Score</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2rem; border-radius: 15px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🏆</div>
+            <div style="font-size: 2rem; font-weight: bold;" id="bestScore">0%</div>
+            <div style="opacity: 0.9;">Best Score</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 2rem; border-radius: 15px; text-align: center;">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📅</div>
+            <div style="font-size: 1.2rem; font-weight: bold;" id="lastInterview">Never</div>
+            <div style="opacity: 0.9;">Last Interview</div>
+        </div>
+    </div>
+
+    <!-- History List -->
+    <div class="history-section">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 style="color: #1a1a1a; font-size: 1.8rem; margin: 0;">Recent Interviews</h2>
+            <button id="refreshBtn" class="btn" style="background: #22c55e; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+                🔄 Refresh
+            </button>
+        </div>
+
+        <div id="historyList" class="history-list">
+            <!-- History items will be loaded here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="text-align: center; padding: 3rem; display: none;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📝</div>
+            <h3 style="color: #6b7280; margin-bottom: 1rem;">No interviews yet</h3>
+            <p style="color: #9ca3af; margin-bottom: 2rem;">Take your first interview to see your history here</p>
+            <a href="/start-interview" class="btn" style="background: #22c55e; color: white; text-decoration: none; padding: 1rem 2rem; border-radius: 8px; display: inline-block;">
+                🚀 Start Interview
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Login Required Modal -->
+<div id="loginModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 400px; margin: 1rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+        <h3 style="margin-bottom: 1rem;">Login Required</h3>
+        <p style="color: #6b7280; margin-bottom: 2rem;">Please login to view your interview history</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/login" class="btn" style="background: #22c55e; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px;">Login</a>
+            <button onclick="closeLoginModal()" class="btn" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentUser = null;
+
+function checkAuth() {
+    currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!currentUser || !currentUser.access_token) {
+        document.getElementById('loginModal').style.display = 'flex';
+        return false;
+    }
+    return true;
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    window.location.href = '/';
+}
+
+async function loadHistory() {
+    if (!checkAuth()) return;
+
+    try {
+        const response = await fetch('/api/profile/history');
+        const data = await response.json();
+
+        if (data.success) {
+            updateStats(data);
+            displayHistory(data.history);
+        } else {
+            Toast.error('Failed to load history');
+        }
+    } catch (error) {
+        Toast.error('Network error');
+    }
+}
+
+function updateStats(data) {
+    const totalInterviews = data.total_interviews || 0;
+    const history = data.history || [];
+    
+    document.getElementById('totalInterviews').textContent = totalInterviews;
+    
+    if (history.length > 0) {
+        const scores = history.map(h => h.score);
+        const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+        const bestScore = Math.max(...scores);
+        const lastDate = new Date(history[0].created_at).toLocaleDateString();
+        
+        document.getElementById('avgScore').textContent = avgScore + '%';
+        document.getElementById('bestScore').textContent = bestScore + '%';
+        document.getElementById('lastInterview').textContent = lastDate;
+    }
+}
+
+function displayHistory(history) {
+    const historyList = document.getElementById('historyList');
+    const emptyState = document.getElementById('emptyState');
+
+    if (history.length === 0) {
+        historyList.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
+
+    historyList.style.display = 'block';
+    emptyState.style.display = 'none';
+
+    historyList.innerHTML = history.map(item => `
+        <div class="history-item" style="background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid ${getScoreColor(item.score)};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.5rem;">${getScoreEmoji(item.score)}</span>
+                        <span style="font-size: 1.5rem; font-weight: bold; color: ${getScoreColor(item.score)};">${item.score}%</span>
+                    </div>
+                    <div style="color: #6b7280; font-size: 0.9rem;">
+                        ${new Date(item.created_at).toLocaleDateString()} at ${new Date(item.created_at).toLocaleTimeString()}
+                    </div>
+                </div>
+                <a href="/results/${item.id}" class="btn" style="background: #3b82f6; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem;">
+                    📊 View Details
+                </a>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <div style="color: #374151; margin-bottom: 0.5rem;">${item.feedback}</div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${item.companies.slice(0, 3).map(company => `
+                        <span style="background: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;">${company}</span>
+                    `).join('')}
+                    ${item.companies.length > 3 ? `<span style="color: #6b7280; font-size: 0.8rem;">+${item.companies.length - 3} more</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getScoreColor(score) {
+    if (score >= 80) return '#22c55e';
+    if (score >= 60) return '#f59e0b';
+    return '#ef4444';
+}
+
+function getScoreEmoji(score) {
+    if (score >= 80) return '🏆';
+    if (score >= 60) return '👍';
+    return '📈';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadHistory();
+    
+    document.getElementById('refreshBtn').addEventListener('click', loadHistory);
+});
+</script>
+{% endblock %}
