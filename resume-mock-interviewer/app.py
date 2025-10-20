@@ -70,6 +70,35 @@ def history():
 def dashboard():
     return render_template('dashboard.html')
 
+@app.route('/debug/database')
+def debug_database():
+    """Debug endpoint to check database status"""
+    try:
+        # Check table access
+        response = supabase.select('results', {})
+        
+        results = []
+        if response.status_code == 200:
+            results = response.json()
+        
+        debug_info = {
+            'table_accessible': response.status_code == 200,
+            'response_code': response.status_code,
+            'total_results': len(results),
+            'results_sample': results[:5] if results else [],
+            'supabase_url': os.getenv('SUPABASE_URL'),
+            'has_service_key': bool(os.getenv('SUPABASE_SERVICE_KEY')),
+            'session_data': dict(session) if session else {}
+        }
+        
+        return jsonify(debug_info)
+        
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'table_accessible': False
+        }), 500
+
 # Authentication routes
 @app.route('/api/auth/signup', methods=['POST'])
 def auth_signup():
@@ -310,17 +339,43 @@ def reset_password_api():
 
 @app.route('/api/profile/history')
 def get_profile_history():
-    """Get user's last 3 interview results"""
+    """Get user's last 5 interview results"""
     try:
-        user_id = session.get('user', {}).get('id')
-        if not user_id:
-            return jsonify({'error': 'User not authenticated'}), 401
+        user_data = session.get('user', {})
+        user_id = user_data.get('id') if user_data else None
         
-        # Get last 5 results for user
+        print(f"Getting history for user_id: {user_id}")
+        
+        if not user_id:
+            # Guest user - check session for single result
+            if 'guest_result' in session:
+                guest_result = session['guest_result']
+                return jsonify({
+                    'success': True,
+                    'history': [{
+                        'id': guest_result['id'],
+                        'score': guest_result['score'],
+                        'feedback': guest_result['feedback'],
+                        'created_at': guest_result['created_at'],
+                        'companies': guest_result['companies'][:3]
+                    }],
+                    'total_interviews': 1
+                })
+            else:
+                return jsonify({
+                    'success': True,
+                    'history': [],
+                    'total_interviews': 0
+                })
+        
+        # Logged in user - get from database
         response = supabase.select('results', {'user_id': user_id})
+        print(f"DB history response: {response.status_code}")
         
         if response.status_code == 200:
             results = response.json()
+            print(f"Found {len(results)} results for user")
+            
             # Sort by created_at and get last 5
             sorted_results = sorted(results, key=lambda x: x['created_at'], reverse=True)[:5]
             
@@ -331,7 +386,7 @@ def get_profile_history():
                     'score': result['score'],
                     'feedback': result['feedback'],
                     'created_at': result['created_at'],
-                    'companies': json.loads(result['companies'])[:3]  # Show only 3 companies
+                    'companies': json.loads(result['companies'])[:3]
                 })
             
             return jsonify({
@@ -347,15 +402,24 @@ def get_profile_history():
             })
             
     except Exception as e:
+        print(f"History error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/get-result/<result_id>')
 def get_result(result_id):
     try:
+        # Check if it's a guest result in session
+        if 'guest_result' in session and session['guest_result']['id'] == result_id:
+            print(f"Returning guest result from session: {result_id}")
+            return jsonify(session['guest_result'])
+        
+        # Try to get from database
         response = supabase.select('results', {'id': result_id})
+        print(f"DB query response: {response.status_code}")
         
         if response.status_code == 200 and response.json():
             result = response.json()[0]
+            print(f"Found result in DB: {result['id']}")
             return jsonify({
                 'id': result['id'],
                 'score': result['score'],
@@ -365,22 +429,10 @@ def get_result(result_id):
                 'questions': json.loads(result['questions'])
             })
         else:
-            # Return demo data if no result found
-            return jsonify({
-                'id': 'demo',
-                'score': 75,
-                'feedback': 'This is a demo result. Take an interview to see your actual performance.',
-                'companies': ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Uber', 'Airbnb'],
-                'answers': [
-                    {'questionId': 0, 'text': 'Demo answer for behavioral question', 'type': 'short-answer'},
-                    {'questionId': 1, 'selectedOption': 0, 'correct': True, 'type': 'multiple-choice'}
-                ],
-                'questions': [
-                    {'question': 'Tell me about yourself', 'type': 'short-answer'},
-                    {'question': 'What is your greatest strength?', 'type': 'multiple-choice', 'options': ['Leadership', 'Technical Skills', 'Communication', 'Problem Solving'], 'correctAnswer': 0}
-                ]
-            })
+            print(f"No result found for ID: {result_id}")
+            return jsonify({'error': 'Result not found'}), 404
     except Exception as e:
+        print(f"Get result error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/questions')
@@ -406,38 +458,50 @@ def submit_answers():
         answers = request.json.get('answers', [])
         role = request.json.get('role', 'Software Engineer')
         questions = request.json.get('questions', [])
+        user_id = request.json.get('user_id')
         
         score = calculate_score(answers)
         feedback = generate_feedback(score, role)
         companies = get_companies(score, role)
-        
-        # Store in Supabase
         result_id = str(uuid.uuid4())
         
-        # Get user ID from request or session
-        user_id = request.json.get('user_id') or (session.get('user', {}).get('id') if 'user' in session else None)
-        
-        data = {
+        result_data = {
             'id': result_id,
             'score': score,
             'feedback': feedback,
-            'companies': json.dumps(companies),
-            'answers': json.dumps(answers),
-            'questions': json.dumps(questions),
-            'user_id': user_id,
+            'companies': companies,
+            'answers': answers,
+            'questions': questions,
             'created_at': datetime.now().isoformat()
         }
         
-        response = supabase.insert('results', data)
+        if user_id:  # Logged in user - save to database
+            print(f"Saving to DB - User ID: {user_id}, Score: {score}")
+            
+            db_data = {
+                'id': result_id,
+                'score': score,
+                'feedback': feedback,
+                'companies': json.dumps(companies),
+                'answers': json.dumps(answers),
+                'questions': json.dumps(questions),
+                'user_id': user_id,
+                'created_at': datetime.now().isoformat()
+            }
+            
+            response = supabase.insert('results', db_data)
+            print(f"DB Insert response: {response.status_code}, {response.text}")
+            
+            if response.status_code != 201:  # Supabase returns 201 for successful insert
+                print(f"DB insert failed: {response.text}")
+        else:  # Guest user - save to session
+            print(f"Saving to session - Guest user, Score: {score}")
+            session['guest_result'] = result_data
         
-        return jsonify({
-            'id': result_id,
-            'score': score,
-            'feedback': feedback,
-            'companies': companies
-        })
+        return jsonify(result_data)
         
     except Exception as e:
+        print(f"Submit error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 def calculate_score(answers):

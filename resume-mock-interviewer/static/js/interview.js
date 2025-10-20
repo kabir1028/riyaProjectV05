@@ -283,7 +283,7 @@ async function submitAnswers() {
                 role: selectedRole,
                 difficulty: selectedDifficulty,
                 questions: questions,
-                user_id: JSON.parse(localStorage.getItem('user') || '{}').user?.id || null
+                user_id: JSON.parse(localStorage.getItem('user') || '{}').id || null
             })
         });
         

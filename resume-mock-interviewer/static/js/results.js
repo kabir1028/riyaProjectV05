@@ -28,6 +28,15 @@ function createParticles() {
 
 function loadResults() {
     try {
+        // Check if we have a result ID from URL
+        const resultId = window.resultId;
+        
+        if (resultId) {
+            // Load specific result by ID
+            loadResultById(resultId);
+            return;
+        }
+        
         const resultsData = sessionStorage.getItem('interviewResults');
         const answersData = sessionStorage.getItem('interviewAnswers');
         const questionsData = sessionStorage.getItem('interviewQuestions');
@@ -35,31 +44,8 @@ function loadResults() {
         console.log('Loading results:', { resultsData, answersData, questionsData });
         
         if (!resultsData) {
-            console.log('No results data found, showing demo results');
-            // Show demo results instead of redirecting
-            const demoResults = {
-                score: 75,
-                feedback: 'This is a demo result. Take an interview to see your actual performance.',
-                companies: ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Uber', 'Airbnb']
-            };
-            const demoAnswers = [
-                {questionId: 0, text: 'Demo answer for behavioral question', type: 'short-answer'},
-                {questionId: 1, selectedOption: 0, correct: true, type: 'multiple-choice'}
-            ];
-            const demoQuestions = [
-                {question: 'Tell me about yourself', type: 'short-answer'},
-                {question: 'What is your greatest strength?', type: 'multiple-choice', options: ['Leadership', 'Technical Skills', 'Communication', 'Problem Solving'], correctAnswer: 0}
-            ];
-            
-            // Use demo data
-            animateScore(demoResults.score);
-            updateProgressRing(demoResults.score);
-            document.getElementById('feedbackText').textContent = demoResults.feedback;
-            updatePerformanceStats(demoResults, demoAnswers);
-            createPerformanceChart(demoResults, demoAnswers);
-            displayQAReview(demoQuestions, demoAnswers);
-            displayCompanies(demoResults.companies);
-            updateImprovementSuggestions(demoResults.score);
+            console.log('No results data found, redirecting to start interview');
+            window.location.href = '/start-interview';
             return;
         }
         
@@ -93,32 +79,34 @@ function loadResults() {
         
     } catch (error) {
         console.error('Results loading error:', error);
-        Toast.error('Failed to load results. Showing demo data instead.');
-        // Show demo results instead of redirecting
-        const demoResults = {
-            score: 75,
-            feedback: 'This is a demo result. Take an interview to see your actual performance.',
-            companies: ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Uber', 'Airbnb']
-        };
-        const demoAnswers = [
-            {questionId: 0, text: 'Demo answer for behavioral question', type: 'short-answer'},
-            {questionId: 1, selectedOption: 0, correct: true, type: 'multiple-choice'}
-        ];
-        const demoQuestions = [
-            {question: 'Tell me about yourself', type: 'short-answer'},
-            {question: 'What is your greatest strength?', type: 'multiple-choice', options: ['Leadership', 'Technical Skills', 'Communication', 'Problem Solving'], correctAnswer: 0}
-        ];
-        
-        // Use demo data
-        animateScore(demoResults.score);
-        updateProgressRing(demoResults.score);
-        document.getElementById('feedbackText').textContent = demoResults.feedback;
-        updatePerformanceStats(demoResults, demoAnswers);
-        createPerformanceChart(demoResults, demoAnswers);
-        displayQAReview(demoQuestions, demoAnswers);
-        displayCompanies(demoResults.companies);
-        updateImprovementSuggestions(demoResults.score);
+        Toast.error('Failed to load results');
+        window.location.href = '/start-interview';
     }
+}
+
+function loadResultById(resultId) {
+    fetch(`/api/get-result/${resultId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Use the loaded data
+            animateScore(data.score);
+            updateProgressRing(data.score);
+            document.getElementById('feedbackText').textContent = data.feedback;
+            updatePerformanceStats(data, data.answers);
+            createPerformanceChart(data, data.answers);
+            displayQAReview(data.questions, data.answers);
+            displayCompanies(data.companies);
+            updateImprovementSuggestions(data.score);
+        })
+        .catch(error => {
+            console.error('Error loading result:', error);
+            Toast.error('Failed to load result');
+            window.location.href = '/start-interview';
+        });
 }
 
 function animateScore(targetScore) {

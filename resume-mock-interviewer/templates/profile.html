@@ -38,11 +38,105 @@
         </div>
     </div>
     
-    <!-- Recent Interview History -->
-    <div class="history-card glass" style="animation: slideInUp 0.8s ease-out 0.2s both;">
+    <!-- Skills & Progress -->
+    <div class="skills-card glass" style="animation: slideInUp 0.8s ease-out 0.2s both; margin-bottom: 3rem;">
         <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">
-            📊 Recent <span style="color: #22c55e;">Interview History</span>
+            🎆 Skills & <span style="color: #22c55e;">Progress</span>
         </h3>
+        <div class="skills-section" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 2rem;">
+            <!-- Technical Skills -->
+            <div style="background: rgba(34, 197, 94, 0.05); padding: 2rem; border-radius: 15px; border: 1px solid rgba(34, 197, 94, 0.1);">
+                <h4 style="color: #1a1a1a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem;">
+                    💻 <span>Technical Skills</span>
+                </h4>
+                <div style="space-y: 1.5rem;">
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 500;">
+                            <span style="color: #374151;">Problem Solving</span>
+                            <span id="problemSolvingLevel" style="color: #22c55e; font-weight: bold;">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(34, 197, 94, 0.2); border-radius: 10px; overflow: hidden;">
+                            <div id="problemSolvingBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 10px; transition: width 1s ease-out;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 500;">
+                            <span style="color: #374151;">Technical Knowledge</span>
+                            <span id="technicalLevel" style="color: #3b82f6; font-weight: bold;">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(59, 130, 246, 0.2); border-radius: 10px; overflow: hidden;">
+                            <div id="technicalBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px; transition: width 1s ease-out;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 500;">
+                            <span style="color: #374151;">Communication</span>
+                            <span id="communicationLevel" style="color: #f59e0b; font-weight: bold;">0%</span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: rgba(245, 158, 11, 0.2); border-radius: 10px; overflow: hidden;">
+                            <div id="communicationBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 10px; transition: width 1s ease-out;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Achievements -->
+            <div style="background: rgba(245, 158, 11, 0.05); padding: 2rem; border-radius: 15px; border: 1px solid rgba(245, 158, 11, 0.1);">
+                <h4 style="color: #1a1a1a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem;">
+                    🏆 <span>Achievements</span>
+                </h4>
+                <div id="achievementsList">
+                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 10px; border-left: 4px solid #f59e0b;">
+                        <span style="font-size: 2rem;">🎖️</span>
+                        <div>
+                            <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.25rem;">First Interview</div>
+                            <div style="color: #6b7280; font-size: 0.9rem;">Complete your first mock interview</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analytics -->
+    <div class="analytics-card glass" style="animation: slideInUp 0.8s ease-out 0.3s both; margin-bottom: 3rem;">
+        <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">
+            📈 Performance <span style="color: #22c55e;">Analytics</span>
+        </h3>
+        <div class="analytics-section" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+            <div style="background: rgba(34, 197, 94, 0.05); padding: 2rem; border-radius: 15px; text-align: center; border: 1px solid rgba(34, 197, 94, 0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔥</div>
+                <div id="streakCount" style="font-size: 2rem; font-weight: bold; color: #22c55e; margin-bottom: 0.5rem;">0</div>
+                <div style="color: #6b7280; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Day Streak</div>
+            </div>
+            <div style="background: rgba(59, 130, 246, 0.05); padding: 2rem; border-radius: 15px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">⏱️</div>
+                <div id="avgTime" style="font-size: 2rem; font-weight: bold; color: #3b82f6; margin-bottom: 0.5rem;">0m</div>
+                <div style="color: #6b7280; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Avg Time</div>
+            </div>
+            <div style="background: rgba(245, 158, 11, 0.05); padding: 2rem; border-radius: 15px; text-align: center; border: 1px solid rgba(245, 158, 11, 0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">💯</div>
+                <div id="accuracy" style="font-size: 2rem; font-weight: bold; color: #f59e0b; margin-bottom: 0.5rem;">0%</div>
+                <div style="color: #6b7280; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Accuracy</div>
+            </div>
+            <div style="background: rgba(139, 92, 246, 0.05); padding: 2rem; border-radius: 15px; text-align: center; border: 1px solid rgba(139, 92, 246, 0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🚀</div>
+                <div id="improvement" style="font-size: 2rem; font-weight: bold; color: #8b5cf6; margin-bottom: 0.5rem;">+0%</div>
+                <div style="color: #6b7280; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Improvement</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Interview History -->
+    <div class="history-card glass" style="animation: slideInUp 0.8s ease-out 0.4s both;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 style="color: #1a1a1a; margin: 0; font-size: 1.8rem; font-weight: 600;">
+                📊 Recent <span style="color: #22c55e;">Interview History</span>
+            </h3>
+            <a href="/history" style="color: #22c55e; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                View All <span>→</span>
+            </a>
+        </div>
         
         <div id="historyContainer">
             <div class="loading-state">
@@ -51,8 +145,13 @@
             </div>
         </div>
         
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="/start-interview" class="btn btn-primary">Take New Interview</a>
+        <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/start-interview" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+                🚀 <span>Take New Interview</span>
+            </a>
+            <a href="/history" class="btn" style="background: #3b82f6; color: white; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                📊 <span>View All History</span>
+            </a>
         </div>
     </div>
 </div>
@@ -239,6 +338,8 @@
     font-size: 1.3rem;
 }
 
+
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -257,6 +358,17 @@
     .history-item {
         grid-template-columns: 1fr;
         text-align: center;
+    }
+    
+    /* Mobile responsive styles */
+    @media (max-width: 768px) {
+        .skills-section {
+            grid-template-columns: 1fr !important;
+        }
+        
+        .analytics-section {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
     }
 }
 </style>
@@ -324,16 +436,19 @@ function displayHistory(history, totalInterviews) {
         document.getElementById('avgScore').textContent = avgScore;
         document.getElementById('bestScore').textContent = bestScore;
         
-        // Display history
+        // Update skills and analytics
+        updateSkillsAndAnalytics(history, avgScore);
+        
+        // Display history (show only first 3 in profile)
         container.innerHTML = '';
-        history.forEach((item, index) => {
+        history.slice(0, 3).forEach((item, index) => {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
             historyItem.style.animationDelay = (index * 0.1) + 's';
             historyItem.style.animation = 'slideInUp 0.6s ease-out both';
             
             const date = new Date(item.created_at).toLocaleDateString();
-            const companies = item.companies.map(c => `<span class="company-tag">${c}</span>`).join('');
+            const companies = item.companies.slice(0, 3).map(c => `<span class="company-tag">${c}</span>`).join('');
             
             historyItem.innerHTML = `
                 <div class="history-score">${item.score}</div>
@@ -353,6 +468,85 @@ function displayHistory(history, totalInterviews) {
         });
     } else {
         showEmptyState();
+    }
+}
+
+function updateSkillsAndAnalytics(history, avgScore) {
+    // Update skill bars with animation
+    const problemSolving = Math.min(avgScore + Math.random() * 10, 100);
+    const technical = Math.min(avgScore + Math.random() * 15, 100);
+    const communication = Math.min(avgScore + Math.random() * 8, 100);
+    
+    setTimeout(() => {
+        document.getElementById('problemSolvingBar').style.width = problemSolving + '%';
+        document.getElementById('problemSolvingLevel').textContent = Math.round(problemSolving) + '%';
+        
+        document.getElementById('technicalBar').style.width = technical + '%';
+        document.getElementById('technicalLevel').textContent = Math.round(technical) + '%';
+        
+        document.getElementById('communicationBar').style.width = communication + '%';
+        document.getElementById('communicationLevel').textContent = Math.round(communication) + '%';
+    }, 500);
+    
+    // Update analytics
+    document.getElementById('streakCount').textContent = Math.min(history.length, 7);
+    document.getElementById('avgTime').textContent = '12m';
+    document.getElementById('accuracy').textContent = avgScore + '%';
+    
+    const improvement = history.length > 1 ? 
+        Math.round(((history[0].score - history[history.length - 1].score) / history[history.length - 1].score) * 100) : 0;
+    document.getElementById('improvement').textContent = (improvement > 0 ? '+' : '') + improvement + '%';
+    
+    // Update achievements
+    updateAchievements(history, avgScore);
+}
+
+function updateAchievements(history, avgScore) {
+    const achievements = [];
+    
+    if (history.length >= 1) {
+        achievements.push({
+            icon: '🎖️',
+            title: 'First Interview',
+            desc: 'Completed your first mock interview'
+        });
+    }
+    
+    if (history.length >= 5) {
+        achievements.push({
+            icon: '🔥',
+            title: 'Interview Veteran',
+            desc: 'Completed 5 mock interviews'
+        });
+    }
+    
+    if (avgScore >= 80) {
+        achievements.push({
+            icon: '🏆',
+            title: 'High Performer',
+            desc: 'Achieved 80%+ average score'
+        });
+    }
+    
+    if (history.some(h => h.score >= 90)) {
+        achievements.push({
+            icon: '⭐',
+            title: 'Excellence',
+            desc: 'Scored 90%+ in an interview'
+        });
+    }
+    
+    const achievementsList = document.getElementById('achievementsList');
+    if (achievements.length > 0) {
+        achievementsList.innerHTML = achievements.map(achievement => `
+            <div class="achievement-item">
+                <span class="achievement-icon">${achievement.icon}</span>
+                <div>
+                    <div class="achievement-title">${achievement.title}</div>
+                    <div class="achievement-desc">${achievement.desc}</div>
+                </div>
+            </div>
+        `).join('');
     }
 }
 
