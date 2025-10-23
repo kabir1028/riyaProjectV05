@@ -215,3 +215,22 @@ def get_current_user():
     if user:
         return jsonify({'success': True, 'user': user})
     return jsonify({'success': False, 'user': None})
+
+@auth_bp.route('/profile', methods=['GET', 'POST'])
+def profile():
+    try:
+        user = session.get('user')
+        if not user:
+            return jsonify({'success': False, 'message': 'Not authenticated'}), 401
+        
+        if request.method == 'GET':
+            result = UserService.get_profile(user['id'])
+            return jsonify(result)
+        
+        if request.method == 'POST':
+            data = request.get_json()
+            result = UserService.update_profile(user['id'], data)
+            return jsonify(result)
+    except Exception as e:
+        print(f"Profile API error: {e}")
+        return jsonify({'success': False, 'message': 'Operation failed'}), 500

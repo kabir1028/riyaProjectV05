@@ -42,6 +42,21 @@ class DatabaseManager:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        
+        # Add missing columns if they don't exist
+        columns_to_add = [
+            ('phone', 'VARCHAR(50)'),
+            ('user_role', 'VARCHAR(255)'),
+            ('experience', 'VARCHAR(50)'),
+            ('location', 'VARCHAR(255)'),
+            ('bio', 'TEXT')
+        ]
+        
+        for column_name, column_type in columns_to_add:
+            try:
+                cursor.execute(f'ALTER TABLE users ADD COLUMN IF NOT EXISTS {column_name} {column_type}')
+            except:
+                pass
 
         
         cursor.execute('''

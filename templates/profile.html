@@ -236,10 +236,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadProfileData(userId) {
     try {
-        const response = await fetch(`/api/profile/history?user_id=${userId}`);
-        const data = await response.json();
-        if (data.success) {
-            document.getElementById('totalInterviews').textContent = data.total_interviews;
+        // Load interview history
+        const historyResponse = await fetch(`/api/profile/history?user_id=${userId}`);
+        const historyData = await historyResponse.json();
+        if (historyData.success) {
+            document.getElementById('totalInterviews').textContent = historyData.total_interviews;
+        }
+        
+        // Load profile data
+        const profileResponse = await fetch('/api/auth/profile');
+        const profileData = await profileResponse.json();
+        if (profileData.success && profileData.profile) {
+            const profile = profileData.profile;
+            document.getElementById('fullName').value = profile.name || '';
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('currentRole').value = profile.user_role || '';
+            document.getElementById('experience').value = profile.experience || '';
+            document.getElementById('location').value = profile.location || '';
+            document.getElementById('bio').value = profile.bio || '';
+            
+            if (profile.name) {
+                document.getElementById('displayName').textContent = profile.name;
+            }
+            
+            updateProfileCompletion();
         }
     } catch (error) {
         console.error('Error loading profile:', error);
@@ -259,8 +279,39 @@ document.querySelectorAll('#profileForm input, #profileForm select, #profileForm
     el.addEventListener('input', updateProfileCompletion);
 });
 
-function saveProfile() {
-    Toast.success('Profile updated successfully!');
+async function saveProfile() {
+    try {
+        const profileData = {
+            name: document.getElementById('fullName').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            user_role: document.getElementById('currentRole').value.trim(),
+            experience: document.getElementById('experience').value,
+            location: document.getElementById('location').value.trim(),
+            bio: document.getElementById('bio').value.trim()
+        };
+        
+        const response = await fetch('/api/auth/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(profileData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            Toast.success('Profile updated successfully!');
+            if (profileData.name) {
+                document.getElementById('displayName').textContent = profileData.name;
+            }
+        } else {
+            Toast.error(data.message || 'Failed to update profile');
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        Toast.error('Failed to update profile');
+    }
 }
 
 function addSkill() {
