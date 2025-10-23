@@ -7,8 +7,14 @@
 <div class="particles" id="particles"></div>
 
 <div class="interview-container">
-    <div class="progress-bar" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); height: 15px; border-radius: 25px; margin-bottom: 3rem; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden;">
-        <div id="progressFill" style="background: linear-gradient(90deg, #007BFF, #28A745); height: 100%; border-radius: 25px; width: 10%; transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);"></div>
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <span style="font-weight: 600; color: #1a1a1a; font-size: 0.95rem;">Interview Progress</span>
+            <span id="progressText" style="font-weight: 700; color: #22c55e; font-size: 0.95rem;">10%</span>
+        </div>
+        <div style="background: #f3f4f6; height: 10px; border-radius: 20px; overflow: hidden;">
+            <div id="progressFill" style="background: linear-gradient(90deg, #22c55e, #16a34a); height: 100%; width: 10%; border-radius: 20px;"></div>
+        </div>
     </div>
     
     <div id="questionContainer" class="question-card glass">

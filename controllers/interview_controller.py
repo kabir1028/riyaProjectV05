@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 import json
 from services.user_service import UserService
 from services.interview_service import InterviewService
+from services.ai_service import AIService
 
 interview_bp = Blueprint('interview', __name__, url_prefix='/api')
 
@@ -25,15 +26,22 @@ def create_guest():
 def get_questions():
     role = request.args.get('role', 'Software Engineer')
     difficulty = request.args.get('difficulty', 'Beginner')
+    use_ai = request.args.get('use_ai', 'true').lower() == 'true'
     
     try:
-        with open('data/questions.json', 'r') as f:
-            data = json.load(f)
-        questions = data.get(role, {}).get(difficulty, [])
-        return jsonify(questions)
+        if use_ai:
+            # Generate questions using AI
+            questions = AIService.generate_interview_questions(role, difficulty)
+            return jsonify({'success': True, 'questions': questions, 'source': 'ai'})
+        else:
+            # Use static questions from JSON
+            with open('data/questions.json', 'r') as f:
+                data = json.load(f)
+            questions = data.get(role, {}).get(difficulty, [])
+            return jsonify({'success': True, 'questions': questions[:10], 'source': 'static'})
     except Exception as e:
         print(f"Get questions error: {e}")
-        return jsonify({'error': 'Failed to load questions'}), 500
+        return jsonify({'success': False, 'error': 'Failed to load questions'}), 500
 
 @interview_bp.route('/submit-answers', methods=['POST'])
 def submit_answers():
@@ -41,25 +49,93 @@ def submit_answers():
         data = request.get_json()
         answers = data.get('answers', [])
         role = data.get('role', 'Software Engineer')
+        difficulty = data.get('difficulty', 'Beginner')
         questions = data.get('questions', [])
         user_id = data.get('user_id')
+        use_ai = data.get('use_ai', True)
         
         if not user_id:
             return jsonify({'success': False, 'message': 'User ID required'}), 400
         
-        score = InterviewService.calculate_score(answers)
-        feedback = InterviewService.generate_feedback(score, role)
-        companies = InterviewService.get_companies(score, role)
+        # Calculate score with AI evaluation
+        total_score = 0
+        evaluated_answers = []
         
-        result = InterviewService.save_result(user_id, score, feedback, companies, answers, questions)
+        for i, answer in enumerate(answers):
+            question = questions[i]
+            
+            if answer.get('type') == 'multiple-choice':
+                # MCQ scoring
+                if answer.get('correct', False):
+                    score = 20
+                    feedback = "Correct answer"
+                else:
+                    score = 0
+                    feedback = "Incorrect answer"
+            else:
+                # AI evaluation for written answers
+                if use_ai and answer.get('text', '').strip():
+                    evaluation = AIService.evaluate_answer(
+                        question.get('question', ''),
+                        answer.get('text', ''),
+                        'short-answer'
+                    )
+                    score = evaluation.get('score', 10)
+                    feedback = evaluation.get('feedback', 'Answer evaluated')
+                else:
+                    # Fallback scoring with validation
+                    evaluation = AIService._fallback_evaluation(answer.get('text', ''))
+                    score = evaluation.get('score', 0)
+                    feedback = evaluation.get('feedback', 'Answer evaluated')
+            
+            total_score += score
+            evaluated_answers.append({
+                **answer,
+                'score': score,
+                'feedback': feedback
+            })
+        
+        # Normalize score to 100
+        final_score = min(100, int((total_score / 200) * 100))
+        
+        # Generate comprehensive report with AI
+        if use_ai:
+            report = AIService.generate_comprehensive_report(answers, questions, role, difficulty)
+        else:
+            report = AIService._fallback_report()
+        
+        # Get company recommendations
+        companies = InterviewService.get_companies(final_score, role)
+        
+        # Prepare detailed feedback
+        detailed_feedback = {
+            'summary': report.get('summary', ''),
+            'strengths': report.get('strengths', []),
+            'improvements': report.get('improvements', []),
+            'recommendations': report.get('recommendations', [])
+        }
+        
+        # Save result
+        result = InterviewService.save_result(
+            user_id, 
+            final_score, 
+            json.dumps(detailed_feedback), 
+            companies, 
+            evaluated_answers, 
+            questions
+        )
         
         if result:
-            return jsonify(result)
+            result['detailed_feedback'] = detailed_feedback
+            result['evaluated_answers'] = evaluated_answers
+            return jsonify({'success': True, **result})
         else:
             return jsonify({'success': False, 'message': 'Failed to save result'}), 500
         
     except Exception as e:
         print(f"Submit answers error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'message': 'Failed to submit answers'}), 500
 
 @interview_bp.route('/get-result/<result_id>')

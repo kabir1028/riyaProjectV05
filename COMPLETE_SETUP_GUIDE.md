@@ -13,10 +13,11 @@
 4. [Brevo SMTP Setup (Email Service)](#brevo-smtp-setup)
 5. [Google OAuth Setup](#google-oauth-setup)
 6. [GitHub OAuth Setup](#github-oauth-setup)
-7. [Environment Configuration](#environment-configuration)
-8. [Running the Application](#running-the-application)
-9. [Testing the Setup](#testing-the-setup)
-10. [Troubleshooting](#troubleshooting)
+7. [Groq AI API Setup](#groq-ai-api-setup)
+8. [Environment Configuration](#environment-configuration)
+9. [Running the Application](#running-the-application)
+10. [Testing the Setup](#testing-the-setup)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -306,7 +307,34 @@ GITHUB_CLIENT_SECRET: [your-client-secret]
 
 ---
 
-## 7️⃣ Environment Configuration
+## 7️⃣ Groq AI API Setup
+
+Groq provides **FREE** and **FAST** AI for question generation and evaluation.
+
+### Step 1: Create Groq Account
+
+1. Go to [console.groq.com](https://console.groq.com)
+2. Click **"Sign Up"**
+3. Sign up with Google, GitHub, or Email
+
+### Step 2: Get API Key
+
+1. After login, go to [console.groq.com/keys](https://console.groq.com/keys)
+2. Click **"Create API Key"**
+3. Name it: `InterviewAce`
+4. Click **"Submit"**
+5. **Copy the API key immediately!**
+
+**Your Groq API key:**
+```
+GROQ_API_KEY: gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**Note:** Groq is 100% FREE with generous limits (30 requests/min, 14,400/day)
+
+---
+
+## 8️⃣ Environment Configuration
 
 ### Step 1: Create .env File
 
@@ -366,6 +394,11 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 # ============================================
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# ============================================
+# AI CONFIGURATION (GROQ API - FREE)
+# ============================================
+GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 
 ### Step 3: Generate Secret Key
@@ -387,7 +420,7 @@ Make sure:
 
 ---
 
-## 8️⃣ Running the Application
+## 9️⃣ Running the Application
 
 ### Step 1: Activate Virtual Environment
 
@@ -429,7 +462,7 @@ You should see the InterviewAce landing page! 🎉
 
 ---
 
-## 9️⃣ Testing the Setup
+## 🔟 Testing the Setup
 
 ### Test 1: Local Signup (Email Verification)
 
@@ -480,7 +513,24 @@ You should see the InterviewAce landing page! 🎉
 
 **Expected:** ✅ Score, feedback, and company recommendations displayed
 
-### Test 6: View History
+### Test 6: AI Question Generation
+
+1. Start a written interview
+2. Check console logs for "AI questions generated"
+3. Questions should be unique each time
+
+**Expected:** ✅ AI generates 10 questions (3 MCQ + 7 written)
+
+### Test 7: AI Answer Evaluation
+
+1. Complete an interview
+2. Submit answers
+3. Wait for AI evaluation (10-20 seconds)
+4. View comprehensive report
+
+**Expected:** ✅ Detailed feedback with strengths, improvements, recommendations
+
+### Test 8: View History
 
 1. Go to **"History"** page
 2. See your past interviews
@@ -491,7 +541,7 @@ You should see the InterviewAce landing page! 🎉
 
 ---
 
-## 🔟 Troubleshooting
+## 1️⃣1️⃣ Troubleshooting
 
 ### Issue 1: Database Connection Error
 
@@ -597,7 +647,32 @@ OSError: [Errno 48] Address already in use
    lsof -ti:5000 | xargs kill -9
    ```
 
-### Issue 7: Secret Key Error
+### Issue 7: Groq API Error
+
+**Error:**
+```
+401 Unauthorized: Invalid API key
+```
+
+**Solution:**
+1. Verify Groq API key in `.env`
+2. Check for extra spaces
+3. Regenerate key from [console.groq.com/keys](https://console.groq.com/keys)
+4. Restart application
+
+### Issue 8: AI Timeout
+
+**Error:**
+```
+Timeout after 30 seconds
+```
+
+**Solution:**
+1. Check internet connection
+2. System falls back to static questions automatically
+3. Try again after 1 minute
+
+### Issue 9: Secret Key Error
 
 **Error:**
 ```

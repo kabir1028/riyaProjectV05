@@ -29,7 +29,7 @@ def signup():
 
 @app.route('/start-interview')
 def start_interview():
-    return render_template('start_interview.html')
+    return render_template('start_interview_new.html')
 
 @app.route('/interview')
 def interview():

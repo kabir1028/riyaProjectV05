@@ -197,9 +197,10 @@ function displayTimeline(history) {
         const scoreColor = item.score >= 80 ? '#22c55e' : item.score >= 60 ? '#f59e0b' : '#ef4444';
         const scoreEmoji = item.score >= 80 ? '🌟' : item.score >= 60 ? '⭐' : '📌';
         
-        const companies = item.companies.slice(0, 4).map(c => 
-            `<span style="background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 0.4rem 0.8rem; border-radius: 15px; font-size: 0.85rem; font-weight: 500;">${c}</span>`
-        ).join(' ');
+        const companies = item.companies.slice(0, 4).map(c => {
+            const companyName = typeof c === 'object' ? c.name : c;
+            return `<span style="background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 0.4rem 0.8rem; border-radius: 15px; font-size: 0.85rem; font-weight: 500;">${companyName}</span>`;
+        }).join(' ');
         
         return `
             <div class="timeline-item">
@@ -223,9 +224,9 @@ function displayTimeline(history) {
                         </div>
                     </div>
                     
-                    <p style="color: #4a5568; margin-bottom: 1.5rem; line-height: 1.6; font-size: 1rem;">
-                        ${item.feedback}
-                    </p>
+                    <div style="color: #4a5568; margin-bottom: 1.5rem; line-height: 1.6; font-size: 1rem;">
+                        ${formatFeedback(item.feedback)}
+                    </div>
                     
                     <div style="margin-bottom: 1.5rem;">
                         <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; font-weight: 500;">Recommended Companies:</div>
@@ -241,6 +242,22 @@ function displayTimeline(history) {
             </div>
         `;
     }).join('');
+}
+
+function formatFeedback(feedback) {
+    if (typeof feedback === 'string') {
+        try {
+            feedback = JSON.parse(feedback);
+        } catch (e) {
+            return feedback;
+        }
+    }
+    
+    if (typeof feedback === 'object' && feedback.summary) {
+        return feedback.summary;
+    }
+    
+    return typeof feedback === 'string' ? feedback : 'No feedback available';
 }
 
 function showEmptyState() {

@@ -1,356 +1,316 @@
-// Interview page JavaScript
-
 let questions = [];
-let currentQuestionIndex = 0;
+let currentQuestion = 0;
 let answers = [];
-let selectedRole = '';
-let selectedDifficulty = '';
+let role = '';
+let difficulty = '';
+let startTime = Date.now();
 
-function getUserId() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user.id || null;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Get selections from sessionStorage
-    selectedRole = sessionStorage.getItem('selectedRole') || 'Software Engineer';
-    selectedDifficulty = sessionStorage.getItem('selectedDifficulty') || 'Beginner';
+// Load interview data
+document.addEventListener('DOMContentLoaded', async () => {
+    role = sessionStorage.getItem('selectedRole');
+    difficulty = sessionStorage.getItem('selectedDifficulty');
     
-    loadQuestions();
+    if (!role || !difficulty) {
+        Toast.error('Interview setup incomplete. Redirecting...');
+        setTimeout(() => window.location.href = '/start-interview', 2000);
+        return;
+    }
     
-    // Event listeners
-    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
-    document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+    Toast.info('Loading AI-generated questions...');
+    await loadQuestions();
 });
 
 async function loadQuestions() {
     try {
-        const response = await fetch(`/api/questions?role=${encodeURIComponent(selectedRole)}&difficulty=${encodeURIComponent(selectedDifficulty)}`);
-        questions = await response.json();
+        const response = await fetch(`/api/questions?role=${encodeURIComponent(role)}&difficulty=${encodeURIComponent(difficulty)}&use_ai=true`);
+        const data = await response.json();
         
-        if (questions.length === 0) {
-            showError(document.getElementById('questionContainer'), 'No questions available for the selected role and difficulty.');
-            return;
-        }
-        
-        displayQuestion();
-    } catch (error) {
-        console.error('Questions loading error:', error);
-        Toast.error('Failed to load questions. Using sample questions...');
-        
-        // Fallback sample questions
-        questions = [
-            {
-                question: "What is your greatest strength?",
-                type: "short-answer"
-            },
-            {
-                question: "Tell me about yourself.",
-                type: "short-answer"
-            },
-            {
-                question: "Why do you want this job?",
-                type: "short-answer"
-            },
-            {
-                question: "What is object-oriented programming?",
-                type: "multiple-choice",
-                options: ["A programming paradigm", "A database type", "A web framework", "A testing method"],
-                correctAnswer: 0
-            },
-            {
-                question: "Describe your experience with teamwork.",
-                type: "short-answer"
-            }
-        ];
-        
-        displayQuestion();
-    }
-}
-
-function updateQuestionIndicators() {
-    const indicator = document.getElementById('questionIndicator');
-    if (!indicator) return;
-    
-    indicator.innerHTML = '';
-    
-    for (let i = 0; i < questions.length; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'indicator-dot';
-        
-        if (i < currentQuestionIndex) {
-            dot.classList.add('completed');
-        } else if (i === currentQuestionIndex) {
-            dot.classList.add('current');
-        }
-        
-        dot.addEventListener('click', () => {
-            if (i < currentQuestionIndex || (i === currentQuestionIndex + 1 && answers[currentQuestionIndex])) {
-                currentQuestionIndex = i;
-                displayQuestion();
-            }
-        });
-        
-        indicator.appendChild(dot);
-    }
-}
-
-function displayQuestion() {
-    if (currentQuestionIndex >= questions.length) {
-        submitAnswers();
-        return;
-    }
-    
-    const question = questions[currentQuestionIndex];
-    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-    
-    // Update progress bar with animation
-    const progressFill = document.getElementById('progressFill');
-    progressFill.style.width = progress + '%';
-    
-    // Update question number with animation
-    const questionNumber = document.getElementById('questionNumber');
-    questionNumber.style.animation = 'none';
-    questionNumber.offsetHeight; // Trigger reflow
-    questionNumber.style.animation = 'fadeInLeft 0.6s ease-out';
-    questionNumber.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-    
-    // Update question text with animation
-    const questionText = document.getElementById('questionText');
-    questionText.style.animation = 'none';
-    questionText.offsetHeight; // Trigger reflow
-    questionText.style.animation = 'fadeInUp 0.6s ease-out 0.2s both';
-    questionText.textContent = question.question;
-    
-    // Create answer section
-    const answerSection = document.getElementById('answerSection');
-    answerSection.innerHTML = '';
-    
-    if (question.type === 'multiple-choice') {
-        const optionsDiv = document.createElement('div');
-        optionsDiv.className = 'options';
-        
-        question.options.forEach((option, index) => {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'option';
-            optionDiv.textContent = option;
-            optionDiv.style.setProperty('--delay', (index * 0.1) + 's');
-            optionDiv.addEventListener('click', () => selectOption(optionDiv, index));
+        if (data.success) {
+            questions = data.questions;
             
-            // Restore selection if exists
-            if (answers[currentQuestionIndex] && answers[currentQuestionIndex].selectedOption === index) {
-                optionDiv.classList.add('selected');
-            }
-            
-            optionsDiv.appendChild(optionDiv);
-        });
-        
-        answerSection.appendChild(optionsDiv);
-    } else {
-        const textareaContainer = document.createElement('div');
-        textareaContainer.style.position = 'relative';
-        
-        const textarea = document.createElement('textarea');
-        textarea.id = 'shortAnswer';
-        textarea.placeholder = 'Type your detailed answer here (minimum 10 words required)...';
-        textarea.style.width = '100%';
-        textarea.style.minHeight = '150px';
-        textarea.style.padding = '20px';
-        textarea.style.border = '2px solid rgba(34, 197, 94, 0.3)';
-        textarea.style.borderRadius = '15px';
-        textarea.style.fontSize = '1rem';
-        textarea.style.resize = 'vertical';
-        textarea.style.background = 'rgba(255, 255, 255, 0.8)';
-        textarea.style.color = '#1a1a1a';
-        textarea.style.animation = 'slideInUp 0.6s ease-out 0.4s both';
-        
-        const wordCounter = document.createElement('div');
-        wordCounter.className = 'word-counter insufficient';
-        wordCounter.textContent = '0/10 words';
-        
-        textarea.addEventListener('input', function() {
-            const words = this.value.trim().split(/\s+/).filter(word => word.length > 0);
-            const wordCount = words.length;
-            
-            wordCounter.textContent = `${wordCount}/10 words`;
-            
-            if (wordCount >= 10) {
-                wordCounter.className = 'word-counter sufficient';
-                textarea.style.borderColor = '#22c55e';
+            if (data.source === 'ai') {
+                Toast.success('AI questions generated successfully!');
             } else {
-                wordCounter.className = 'word-counter insufficient';
-                textarea.style.borderColor = '#ef4444';
+                Toast.info('Using curated questions');
             }
-        });
-        
-        // Load previous answer if exists
-        if (answers[currentQuestionIndex]) {
-            textarea.value = answers[currentQuestionIndex].text || '';
-            textarea.dispatchEvent(new Event('input'));
+            
+            // Initialize answers array
+            answers = questions.map(q => ({
+                type: q.type,
+                text: '',
+                selected: null,
+                correct: false
+            }));
+            
+            renderQuestion();
+            updateIndicators();
+        } else {
+            throw new Error('Failed to load questions');
         }
-        
-        textareaContainer.appendChild(textarea);
-        textareaContainer.appendChild(wordCounter);
-        answerSection.appendChild(textareaContainer);
+    } catch (error) {
+        console.error('Load questions error:', error);
+        Toast.error('Failed to load questions. Please try again.');
+        setTimeout(() => window.location.href = '/start-interview', 2000);
     }
+}
+
+function renderQuestion() {
+    const question = questions[currentQuestion];
+    const answerSection = document.getElementById('answerSection');
     
-    // Update question indicators
-    updateQuestionIndicators();
+    // Update question number and text
+    document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+    document.getElementById('questionText').textContent = question.question;
+    
+    // Update progress bar
+    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+    
+    // Render answer input based on type
+    if (question.type === 'multiple-choice') {
+        answerSection.innerHTML = `
+            <div class="options-container" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                ${question.options.map((option, index) => {
+                    const isSelected = answers[currentQuestion].selected === index;
+                    return `
+                    <div class="option-card" 
+                         onclick="selectOption(${index})"
+                         style="padding: 1.2rem 1.5rem; 
+                                border: 2px solid ${isSelected ? '#22c55e' : '#e5e7eb'}; 
+                                border-radius: 10px; 
+                                cursor: pointer; 
+                                transition: all 0.2s ease; 
+                                background: ${isSelected ? '#f0fdf4' : 'white'};
+                                display: flex; 
+                                align-items: center; 
+                                gap: 1rem;">
+                        <div class="radio-dot" 
+                             style="min-width: 24px; 
+                                    height: 24px; 
+                                    border-radius: 50%; 
+                                    border: 3px solid ${isSelected ? '#22c55e' : '#d1d5db'};
+                                    background: white;
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    transition: all 0.2s;">
+                            ${isSelected ? '<div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e;"></div>' : ''}
+                        </div>
+                        <div class="option-letter" 
+                             style="min-width: 32px; 
+                                    height: 32px; 
+                                    border-radius: 6px; 
+                                    background: ${isSelected ? '#22c55e' : '#f3f4f6'}; 
+                                    color: ${isSelected ? 'white' : '#6b7280'}; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    font-weight: 700; 
+                                    font-size: 0.95rem; 
+                                    transition: all 0.2s;">
+                            ${String.fromCharCode(65 + index)}
+                        </div>
+                        <div class="option-text" 
+                             style="flex: 1; 
+                                    color: ${isSelected ? '#166534' : '#374151'}; 
+                                    font-size: 1rem; 
+                                    line-height: 1.5;
+                                    font-weight: ${isSelected ? '600' : '400'};">
+                            ${option}
+                        </div>
+                    </div>
+                `}).join('')}
+            </div>
+        `;
+    } else {
+        answerSection.innerHTML = `
+            <div style="margin-top: 2rem; animation: fadeInLeft 0.6s ease-out;">
+                <textarea 
+                    id="answerText" 
+                    placeholder="Write your detailed answer here...\n\n✓ Be specific and provide examples\n✓ Explain your reasoning clearly\n✓ Aim for at least 30 words for better evaluation\n✓ Use proper grammar and structure"
+                    style="width: 100%; min-height: 250px; padding: 1.5rem; border: 3px solid #e5e7eb; 
+                           border-radius: 12px; background: white; 
+                           color: #1a1a1a; font-size: 1.05rem; resize: vertical; font-family: inherit; line-height: 1.8;
+                           transition: all 0.3s;"
+                    oninput="updateAnswer(this.value)"
+                    onfocus="this.style.borderColor='#22c55e'; this.style.boxShadow='0 0 0 3px rgba(34, 197, 94, 0.1)'"
+                    onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                >${answers[currentQuestion].text}</textarea>
+                <div style="margin-top: 0.8rem; padding: 1rem; background: #f9fafb; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <span id="wordCount" style="font-weight: 600; font-size: 1rem;">0 words</span>
+                    <span style="color: #6b7280; font-size: 0.9rem;">💡 Minimum 30 words recommended</span>
+                </div>
+            </div>
+        `;
+        
+        // Update word count
+        updateWordCount();
+    }
     
     // Update navigation buttons
-    document.getElementById('prevBtn').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
-    const nextBtn = document.getElementById('nextBtn');
+    document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'block' : 'none';
+    document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'Submit Interview' : 'Next →';
     
-    if (currentQuestionIndex === questions.length - 1) {
-        nextBtn.innerHTML = 'Submit Interview <span style="margin-left: 10px;">✓</span>';
-        nextBtn.style.background = 'linear-gradient(45deg, #28A745, #20c997)';
-    } else {
-        nextBtn.innerHTML = 'Next <span style="margin-left: 8px;">→</span>';
-        nextBtn.style.background = 'linear-gradient(45deg, #28A745, #20c997)';
+    updateIndicators();
+}
+
+function selectOption(index) {
+    const question = questions[currentQuestion];
+    answers[currentQuestion].selected = index;
+    answers[currentQuestion].correct = index === question.correctAnswer;
+    
+    // Re-render the question to update UI
+    renderQuestion();
+}
+
+function updateAnswer(text) {
+    answers[currentQuestion].text = text;
+    updateWordCount();
+    updateIndicators();
+}
+
+function updateWordCount() {
+    const text = answers[currentQuestion].text || '';
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    const wordCount = words.length;
+    const wordCountEl = document.getElementById('wordCount');
+    if (wordCountEl) {
+        wordCountEl.textContent = `${wordCount} words`;
+        if (wordCount >= 30) {
+            wordCountEl.style.color = '#22c55e';
+            wordCountEl.innerHTML = `✓ ${wordCount} words <span style="font-size: 0.85rem; color: #16a34a;">(Excellent)</span>`;
+        } else if (wordCount >= 20) {
+            wordCountEl.style.color = '#f59e0b';
+            wordCountEl.innerHTML = `⚠ ${wordCount} words <span style="font-size: 0.85rem; color: #d97706;">(Good, add more)</span>`;
+        } else if (wordCount >= 10) {
+            wordCountEl.style.color = '#ef4444';
+            wordCountEl.innerHTML = `✗ ${wordCount} words <span style="font-size: 0.85rem; color: #dc2626;">(Too short)</span>`;
+        } else {
+            wordCountEl.style.color = '#ef4444';
+            wordCountEl.innerHTML = `✗ ${wordCount} words <span style="font-size: 0.85rem; color: #dc2626;">(Insufficient)</span>`;
+        }
     }
 }
 
-function selectOption(optionElement, optionIndex) {
-    // Remove previous selection with animation
-    document.querySelectorAll('.option').forEach(opt => {
-        opt.classList.remove('selected');
-        opt.style.transform = 'translateX(0) scale(1)';
-    });
-    
-    // Add selection to clicked option with animation
-    optionElement.classList.add('selected');
-    
-    // Store answer
-    const question = questions[currentQuestionIndex];
-    answers[currentQuestionIndex] = {
-        questionId: currentQuestionIndex,
-        selectedOption: optionIndex,
-        correct: optionIndex === question.correctAnswer,
-        type: 'multiple-choice'
-    };
-    
-    // Add haptic feedback (if supported)
-    if (navigator.vibrate) {
-        navigator.vibrate(50);
+function updateIndicators() {
+    const indicator = document.getElementById('questionIndicator');
+    indicator.innerHTML = questions.map((q, index) => {
+        const answer = answers[index];
+        const isAnswered = answer.type === 'multiple-choice' ? answer.selected !== null : answer.text.trim().length > 0;
+        const isCurrent = index === currentQuestion;
+        
+        return `<div class="indicator-dot ${isAnswered ? 'completed' : ''} ${isCurrent ? 'current' : ''}" 
+                     onclick="goToQuestion(${index})"
+                     title="Question ${index + 1}"></div>`;
+    }).join('');
+}
+
+function goToQuestion(index) {
+    if (index >= 0 && index < questions.length) {
+        currentQuestion = index;
+        renderQuestion();
     }
 }
 
-function nextQuestion() {
-    // Save current answer for short-answer questions
-    const shortAnswerTextarea = document.getElementById('shortAnswer');
-    if (shortAnswerTextarea) {
-        answers[currentQuestionIndex] = {
-            questionId: currentQuestionIndex,
-            text: shortAnswerTextarea.value.trim(),
-            type: 'short-answer'
-        };
+// Navigation
+document.getElementById('prevBtn').addEventListener('click', () => {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
     }
-    
-    // Check if answer is provided and meets requirements
-    if (!answers[currentQuestionIndex]) {
-        Toast.warning('Please provide an answer before proceeding.');
+});
+
+document.getElementById('nextBtn').addEventListener('click', async () => {
+    // Validate current answer
+    const answer = answers[currentQuestion];
+    if (answer.type === 'multiple-choice' && answer.selected === null) {
+        Toast.warning('Please select an answer before proceeding');
+        return;
+    }
+    if (answer.type === 'short-answer' && !answer.text.trim()) {
+        Toast.warning('Please provide an answer before proceeding');
         return;
     }
     
-    // Check word count for short-answer questions
-    if (answers[currentQuestionIndex].type === 'short-answer') {
-        const words = (answers[currentQuestionIndex].text || '').trim().split(/\s+/).filter(word => word.length > 0);
-        if (words.length < 10) {
-            Toast.error('Please provide at least 10 words in your answer.');
-            return;
-        }
+    if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+    } else {
+        await submitInterview();
+    }
+});
+
+async function submitInterview() {
+    // Check if all questions are answered
+    const unanswered = answers.findIndex((a, i) => {
+        if (a.type === 'multiple-choice') return a.selected === null;
+        return !a.text.trim();
+    });
+    
+    if (unanswered !== -1) {
+        Toast.warning(`Please answer question ${unanswered + 1} before submitting`);
+        goToQuestion(unanswered);
+        return;
     }
     
-    if (currentQuestionIndex === questions.length - 1) {
-        submitAnswers();
-    } else {
-        currentQuestionIndex++;
-        displayQuestion();
-    }
-}
-
-function prevQuestion() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        displayQuestion();
-    }
-}
-
-async function submitAnswers() {
+    // Show loading
+    Toast.info('Evaluating your answers with AI... This may take a moment.');
+    document.getElementById('nextBtn').disabled = true;
+    document.getElementById('nextBtn').textContent = 'Evaluating...';
+    
     try {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const userId = user?.id;
+        
+        if (!userId) {
+            Toast.error('User session expired. Please login again.');
+            setTimeout(() => window.location.href = '/login', 2000);
+            return;
+        }
+        
+        const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+        
         const response = await fetch('/api/submit-answers', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 answers: answers,
-                role: selectedRole,
-                difficulty: selectedDifficulty,
                 questions: questions,
-                user_id: getUserId()
+                role: role,
+                difficulty: difficulty,
+                user_id: userId,
+                time_taken: timeTaken,
+                use_ai: true
             })
         });
         
-        const result = await response.json();
+        const data = await response.json();
         
-        // Store in sessionStorage for immediate results page access
-        const resultWithData = {
-            ...result,
-            answers: answers,
-            questions: questions
-        };
-        sessionStorage.setItem('latestResult', JSON.stringify(resultWithData));
-        console.log('Stored complete result:', resultWithData);
-        
-        console.log('Stored results:', result);
-        
-        console.log('Results submitted successfully');
-        
-        // Redirect to results page with ID
-        window.location.href = '/results/' + result.id;
-        
+        if (data.success) {
+            Toast.success('Interview completed! Redirecting to results...');
+            
+            // Store result ID
+            sessionStorage.setItem('lastResultId', data.id);
+            
+            setTimeout(() => {
+                window.location.href = `/results/${data.id}`;
+            }, 1500);
+        } else {
+            throw new Error(data.message || 'Submission failed');
+        }
     } catch (error) {
         console.error('Submit error:', error);
-        Toast.error('Failed to submit answers. Please try again.');
-        
-        // Calculate actual score based on answers
-        let calculatedScore = 0;
-        for (const answer of answers) {
-            if (answer.type === 'multiple-choice' && answer.correct) {
-                calculatedScore += 20;
-            } else if (answer.type === 'short-answer' && answer.text) {
-                const wordCount = answer.text.trim().split(/\s+/).length;
-                if (wordCount >= 20) calculatedScore += 20;
-                else if (wordCount >= 10) calculatedScore += 15;
-                else if (wordCount >= 5) calculatedScore += 10;
-            }
-        }
-        
-        const mockResults = {
-            score: Math.min(100, calculatedScore),
-            feedback: calculatedScore >= 80 ? 'Excellent performance! You demonstrated strong knowledge and communication skills.' : 
-                     calculatedScore >= 60 ? 'Good performance! Continue practicing to improve your interview skills.' :
-                     'Keep practicing! Focus on providing more detailed answers and reviewing key concepts.',
-            companies: ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Uber', 'Airbnb']
-        };
-        
-        // Generate a temporary ID for fallback results
-        const tempId = 'temp_' + Date.now();
-        mockResults.id = tempId;
-        
-        const completeResults = {
-            ...mockResults,
-            answers: answers,
-            questions: questions
-        };
-        sessionStorage.setItem('latestResult', JSON.stringify(completeResults));
-        console.log('Stored fallback result:', completeResults);
-        
-        console.log('Stored calculated results:', mockResults);
-        
-        setTimeout(() => {
-            window.location.href = '/results/' + tempId;
-        }, 1500);
+        Toast.error('Failed to submit interview. Please try again.');
+        document.getElementById('nextBtn').disabled = false;
+        document.getElementById('nextBtn').textContent = 'Submit Interview';
     }
 }
+
+// Prevent accidental page leave
+window.addEventListener('beforeunload', (e) => {
+    if (currentQuestion < questions.length) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});

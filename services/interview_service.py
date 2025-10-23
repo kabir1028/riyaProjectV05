@@ -146,8 +146,35 @@ class InterviewService:
     @staticmethod
     def get_companies(score, role):
         companies = {
-            'Software Engineer': ['Google', 'Microsoft', 'Amazon', 'Meta', 'Apple', 'Netflix', 'Uber', 'Airbnb'],
-            'AI Scientist': ['OpenAI', 'DeepMind', 'NVIDIA', 'Tesla', 'IBM', 'Google AI', 'Microsoft Research', 'Amazon AI'],
-            'Data Scientist': ['Netflix', 'Uber', 'Airbnb', 'Spotify', 'LinkedIn', 'Meta', 'Google', 'Amazon']
+            'Software Engineer': [
+                {'name': 'Google', 'logo': 'https://logo.clearbit.com/google.com'},
+                {'name': 'Microsoft', 'logo': 'https://logo.clearbit.com/microsoft.com'},
+                {'name': 'Amazon', 'logo': 'https://logo.clearbit.com/amazon.com'},
+                {'name': 'Meta', 'logo': 'https://logo.clearbit.com/meta.com'},
+                {'name': 'Apple', 'logo': 'https://logo.clearbit.com/apple.com'},
+                {'name': 'Netflix', 'logo': 'https://logo.clearbit.com/netflix.com'},
+                {'name': 'Uber', 'logo': 'https://logo.clearbit.com/uber.com'},
+                {'name': 'Airbnb', 'logo': 'https://logo.clearbit.com/airbnb.com'}
+            ],
+            'AI Scientist': [
+                {'name': 'OpenAI', 'logo': 'https://logo.clearbit.com/openai.com'},
+                {'name': 'DeepMind', 'logo': 'https://logo.clearbit.com/deepmind.com'},
+                {'name': 'NVIDIA', 'logo': 'https://logo.clearbit.com/nvidia.com'},
+                {'name': 'Tesla', 'logo': 'https://logo.clearbit.com/tesla.com'},
+                {'name': 'IBM', 'logo': 'https://logo.clearbit.com/ibm.com'},
+                {'name': 'Google AI', 'logo': 'https://logo.clearbit.com/google.com'},
+                {'name': 'Microsoft Research', 'logo': 'https://logo.clearbit.com/microsoft.com'},
+                {'name': 'Amazon AI', 'logo': 'https://logo.clearbit.com/amazon.com'}
+            ],
+            'Data Scientist': [
+                {'name': 'Netflix', 'logo': 'https://logo.clearbit.com/netflix.com'},
+                {'name': 'Uber', 'logo': 'https://logo.clearbit.com/uber.com'},
+                {'name': 'Airbnb', 'logo': 'https://logo.clearbit.com/airbnb.com'},
+                {'name': 'Spotify', 'logo': 'https://logo.clearbit.com/spotify.com'},
+                {'name': 'LinkedIn', 'logo': 'https://logo.clearbit.com/linkedin.com'},
+                {'name': 'Meta', 'logo': 'https://logo.clearbit.com/meta.com'},
+                {'name': 'Google', 'logo': 'https://logo.clearbit.com/google.com'},
+                {'name': 'Amazon', 'logo': 'https://logo.clearbit.com/amazon.com'}
+            ]
         }
         return companies.get(role, companies['Software Engineer'])[:8]

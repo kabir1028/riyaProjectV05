@@ -1,0 +1,697 @@
+{% extends "base.html" %}
+
+{% block title %}Start Interview - InterviewAce{% endblock %}
+
+{% block content %}
+<style>
+.interview-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.interview-layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Left Side - Resume Upload */
+.resume-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 2rem;
+}
+
+.resume-section h2 {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upload-area {
+    border: 2px dashed #22c55e;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    background: #f0fdf4;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 1rem;
+}
+
+.upload-area:hover {
+    background: #dcfce7;
+    border-color: #16a34a;
+}
+
+.upload-area.dragover {
+    background: #dcfce7;
+    border-color: #16a34a;
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.upload-text {
+    color: #1a1a1a;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.resume-preview {
+    display: none;
+    margin-top: 1rem;
+}
+
+.resume-preview.active {
+    display: block;
+}
+
+.file-info {
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.file-size {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-view {
+    flex: 1;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-remove {
+    flex: 1;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.resume-viewer {
+    margin-top: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.viewer-header {
+    background: #f9fafb;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.viewer-title {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+}
+
+.btn-close-viewer {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    line-height: 1;
+}
+
+.viewer-content {
+    height: 350px;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.viewer-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.viewer-content embed {
+    width: 100%;
+    height: 100%;
+}
+
+.text-preview {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #374151;
+    white-space: pre-wrap;
+}
+
+/* Right Side - Interview Options */
+.interview-options {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.interview-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-btn:hover {
+    color: #1a1a1a;
+}
+
+.tab-btn.active {
+    color: #22c55e;
+    border-bottom-color: #22c55e;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-badge {
+    background: #f59e0b;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+}
+
+.tab-badge.available {
+    background: #22c55e;
+}
+
+.content-description {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.features-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4b5563;
+    font-size: 0.85rem;
+}
+
+.feature-icon {
+    color: #22c55e;
+    font-size: 0.9rem;
+}
+
+.interview-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #22c55e;
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+}
+
+.btn-start:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-coming-soon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+@media (max-width: 1024px) {
+    .interview-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .resume-section {
+        position: relative;
+        top: 0;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-features {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<div class="interview-container">
+    <div class="page-header">
+        <h1>🎯 Start Your <span style="color: #22c55e;">Professional</span> Interview</h1>
+        <p>Upload your resume and choose your interview type</p>
+    </div>
+
+    <div class="interview-layout">
+        <!-- Left Side: Resume Upload -->
+        <div class="resume-section">
+            <h2>📄 Upload Resume</h2>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📤</div>
+                <div class="upload-text">Click or drag to upload</div>
+                <div class="upload-hint">PDF, DOC, DOCX (Max 100KB)</div>
+            </div>
+            
+            <input type="file" id="resumeFile" class="file-input" accept=".pdf,.doc,.docx">
+            
+            <div class="resume-preview" id="resumePreview">
+                <div class="file-info">
+                    <div class="file-name" id="fileName"></div>
+                    <div class="file-size" id="fileSize"></div>
+                </div>
+                
+                <div class="preview-actions">
+                    <button class="btn-view" id="viewResume">👁️ View</button>
+                    <button class="btn-remove" id="removeFile">🗑️ Remove</button>
+                </div>
+                
+                <div class="resume-viewer" id="resumeViewer" style="display: none;">
+                    <div class="viewer-header">
+                        <span class="viewer-title">📄 Resume Preview</span>
+                        <button class="btn-close-viewer" id="closeViewer">×</button>
+                    </div>
+                    <div class="viewer-content" id="viewerContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Interview Options -->
+        <div class="interview-options">
+            
+            <!-- Interview Tabs -->
+            <div class="interview-tabs">
+                <button class="tab-btn" data-tab="voice">
+                    <span>🎤 Voice Interview</span>
+                    <span class="tab-badge">Soon</span>
+                </button>
+                <button class="tab-btn active" data-tab="written">
+                    <span>✍️ Written Interview</span>
+                    <span class="tab-badge available">Active</span>
+                </button>
+            </div>
+
+            <!-- Voice Interview Tab -->
+            <div class="tab-content" id="voiceTab">
+                <p class="content-description">
+                    AI analyzes your resume, asks 10 voice questions, evaluates responses with speech recognition.
+                </p>
+                
+                <div class="features-compact">
+                    <div class="feature-item"><span class="feature-icon">✓</span> Resume-based questions</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> Voice recognition</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> Real-time analysis</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> Pronunciation feedback</div>
+                </div>
+                
+                <button class="btn-start btn-coming-soon" onclick="showComingSoon()">
+                    <span>Coming Soon</span>
+                    <span>🚀</span>
+                </button>
+            </div>
+
+            <!-- Written Interview Tab -->
+            <div class="tab-content active" id="writtenTab">
+                <p class="content-description">
+                    3 MCQs + 7 written questions with AI evaluation and detailed performance report.
+                </p>
+                
+                <div class="features-compact">
+                    <div class="feature-item"><span class="feature-icon">✓</span> 3 MCQ questions</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> 7 written questions</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> AI evaluation</div>
+                    <div class="feature-item"><span class="feature-icon">✓</span> Detailed report</div>
+                </div>
+                
+                <form class="interview-form" id="writtenInterviewForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="jobRole">Job Role</label>
+                            <select id="jobRole" required>
+                                <option value="">Select role...</option>
+                                <option value="Software Engineer">💻 Software Engineer</option>
+                                <option value="AI Scientist">🤖 AI Scientist</option>
+                                <option value="Data Scientist">📊 Data Scientist</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="experienceLevel">Experience Level</label>
+                            <select id="experienceLevel" required>
+                                <option value="">Select level...</option>
+                                <option value="Beginner">🟢 Beginner (0-2 years)</option>
+                                <option value="Intermediate">🟡 Intermediate (2-5 years)</option>
+                                <option value="Advanced">🔴 Advanced (5+ years)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-start" id="startWrittenBtn" disabled>
+                        <span>Start Written Interview</span>
+                        <span>→</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toast fallback if not loaded
+if (typeof Toast === 'undefined') {
+    window.Toast = {
+        success: (msg) => alert('✓ ' + msg),
+        error: (msg) => alert('✗ ' + msg),
+        warning: (msg) => alert('⚠ ' + msg),
+        info: (msg) => alert('ℹ ' + msg)
+    };
+}
+
+let uploadedFile = null;
+
+// Upload area interactions
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('resumeFile');
+const resumePreview = document.getElementById('resumePreview');
+const startBtn = document.getElementById('startWrittenBtn');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+});
+
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+});
+
+function handleFile(file) {
+    if (!file) return;
+    
+    // Validate file type
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validTypes.includes(file.type)) {
+        if (typeof Toast !== 'undefined') {
+            Toast.error('Please upload PDF, DOC, or DOCX file only');
+        } else {
+            alert('✗ Please upload PDF, DOC, or DOCX file only');
+        }
+        return;
+    }
+    
+    // Validate file size (100KB = 102400 bytes)
+    if (file.size > 102400) {
+        if (typeof Toast !== 'undefined') {
+            Toast.error('File size must be under 100KB');
+        } else {
+            alert('✗ File size must be under 100KB');
+        }
+        return;
+    }
+    
+    uploadedFile = file;
+    
+    // Show preview
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+    resumePreview.classList.add('active');
+    uploadArea.style.display = 'none';
+    document.getElementById('resumeViewer').style.display = 'none';
+    
+    // Enable start button
+    startBtn.disabled = false;
+    
+    if (typeof Toast !== 'undefined') {
+        Toast.success('Resume uploaded successfully!');
+    } else {
+        alert('✓ Resume uploaded successfully!');
+    }
+}
+
+document.getElementById('removeFile').addEventListener('click', () => {
+    uploadedFile = null;
+    fileInput.value = '';
+    resumePreview.classList.remove('active');
+    uploadArea.style.display = 'block';
+    startBtn.disabled = true;
+    document.getElementById('resumeViewer').style.display = 'none';
+});
+
+// View resume
+document.getElementById('viewResume').addEventListener('click', () => {
+    const viewer = document.getElementById('resumeViewer');
+    const viewerContent = document.getElementById('viewerContent');
+    
+    if (viewer.style.display === 'none') {
+        viewer.style.display = 'block';
+        
+        // Create object URL for preview
+        const fileURL = URL.createObjectURL(uploadedFile);
+        
+        if (uploadedFile.type === 'application/pdf') {
+            viewerContent.innerHTML = `<embed src="${fileURL}" type="application/pdf" />`;
+        } else {
+            // For DOC/DOCX, show message
+            viewerContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                    <p><strong>${uploadedFile.name}</strong></p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Preview available for PDF files only</p>
+                    <p style="font-size: 0.85rem; color: #9ca3af;">DOC/DOCX files will be processed during interview</p>
+                </div>
+            `;
+        }
+    } else {
+        viewer.style.display = 'none';
+    }
+});
+
+// Close viewer
+document.getElementById('closeViewer').addEventListener('click', () => {
+    document.getElementById('resumeViewer').style.display = 'none';
+});
+
+// Form submission
+document.getElementById('writtenInterviewForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    if (!uploadedFile) {
+        if (typeof Toast !== 'undefined') {
+            Toast.error('Please upload your resume first');
+        } else {
+            alert('✗ Please upload your resume first');
+        }
+        return;
+    }
+    
+    const jobRole = document.getElementById('jobRole').value;
+    const experienceLevel = document.getElementById('experienceLevel').value;
+    
+    if (!jobRole || !experienceLevel) {
+        if (typeof Toast !== 'undefined') {
+            Toast.warning('Please select job role and experience level');
+        } else {
+            alert('⚠ Please select job role and experience level');
+        }
+        return;
+    }
+    
+    // Store data in sessionStorage
+    sessionStorage.setItem('selectedRole', jobRole);
+    sessionStorage.setItem('selectedDifficulty', experienceLevel);
+    sessionStorage.setItem('resumeName', uploadedFile.name);
+    
+    if (typeof Toast !== 'undefined') {
+        Toast.success('Starting interview...');
+    }
+    
+    setTimeout(() => {
+        window.location.href = '/interview';
+    }, 1000);
+});
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Update active tab button
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update active tab content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tab + 'Tab').classList.add('active');
+    });
+});
+
+function showComingSoon() {
+    if (typeof Toast !== 'undefined') {
+        Toast.info('AI Voice Interview feature is under development. Try our Written Interview for now!');
+    } else {
+        alert('ℹ AI Voice Interview feature is under development. Try our Written Interview for now!');
+    }
+}
+</script>
+{% endblock %}
