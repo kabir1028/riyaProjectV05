@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models.database import DatabaseManager
 from services.email_service import EmailService
 import psycopg2
+import json
 
 class UserService:
     @staticmethod
@@ -282,3 +283,62 @@ class UserService:
         except Exception as e:
             print(f"Resend verification error: {e}")
             return {'success': False, 'message': 'Failed to resend verification'}
+    
+    @staticmethod
+    def update_profile(user_id, profile_data):
+        try:
+            conn = DatabaseManager.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                UPDATE users 
+                SET name = %s, phone = %s, user_role = %s, experience = %s, location = %s, bio = %s
+                WHERE id = %s
+            ''', (
+                profile_data.get('name'),
+                profile_data.get('phone'),
+                profile_data.get('user_role'),
+                profile_data.get('experience'),
+                profile_data.get('location'),
+                profile_data.get('bio'),
+                user_id
+            ))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            return {'success': True, 'message': 'Profile updated successfully!'}
+        except Exception as e:
+            print(f"Update profile error: {e}")
+            return {'success': False, 'message': 'Failed to update profile'}
+
+
+    @staticmethod
+    def get_profile(user_id):
+        try:
+            conn = DatabaseManager.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT name, phone, user_role, experience, location, bio FROM users WHERE id = %s', (user_id,))
+            profile = cursor.fetchone()
+            
+            cursor.close()
+            conn.close()
+            
+            if profile:
+                return {
+                    'success': True,
+                    'profile': {
+                        'name': profile[0],
+                        'phone': profile[1],
+                        'user_role': profile[2],
+                        'experience': profile[3],
+                        'location': profile[4],
+                        'bio': profile[5]
+                    }
+                }
+            return {'success': False, 'message': 'Profile not found'}
+        except Exception as e:
+            print(f"Get profile error: {e}")
+            return {'success': False, 'message': 'Failed to load profile'}

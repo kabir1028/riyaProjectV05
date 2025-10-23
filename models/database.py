@@ -34,9 +34,15 @@ class DatabaseManager:
                 verification_token VARCHAR(255),
                 reset_otp VARCHAR(10),
                 otp_expiry TIMESTAMP,
+                phone VARCHAR(50),
+                user_role VARCHAR(255),  
+                experience VARCHAR(50),
+                location VARCHAR(255),
+                bio TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+
         
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS results (

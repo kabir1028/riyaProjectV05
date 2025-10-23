@@ -152,6 +152,86 @@ def get_result(result_id):
         print(f"Get result error: {e}")
         return jsonify({'error': 'Failed to get result'}), 500
 
+@interview_bp.route('/submit-voice-interview', methods=['POST'])
+def submit_voice_interview():
+    try:
+        data = request.get_json()
+        answers = data.get('answers', [])
+        role = data.get('role', 'Software Engineer')
+        difficulty = data.get('difficulty', 'Beginner')
+        questions = data.get('questions', [])
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'message': 'User ID required'}), 400
+        
+        # Evaluate voice answers using AI
+        total_score = 0
+        evaluated_answers = []
+        
+        for i, answer in enumerate(answers):
+            question = questions[i]
+            
+            if answer.get('text', '').strip():
+                # AI evaluation for voice answers
+                evaluation = AIService.evaluate_answer(
+                    question.get('question', ''),
+                    answer.get('text', ''),
+                    'voice'
+                )
+                score = evaluation.get('score', 10)
+                feedback = evaluation.get('feedback', 'Answer evaluated')
+            else:
+                score = 0
+                feedback = 'No answer provided'
+            
+            total_score += score
+            evaluated_answers.append({
+                **answer,
+                'score': score,
+                'feedback': feedback
+            })
+        
+        # Normalize score to 100
+        final_score = min(100, int((total_score / 200) * 100))
+        
+        # Generate comprehensive report
+        report = AIService.generate_comprehensive_report(answers, questions, role, difficulty)
+        
+        # Get company recommendations
+        companies = InterviewService.get_companies(final_score, role)
+        
+        # Prepare detailed feedback
+        detailed_feedback = {
+            'summary': report.get('summary', ''),
+            'strengths': report.get('strengths', []),
+            'improvements': report.get('improvements', []),
+            'recommendations': report.get('recommendations', [])
+        }
+        
+        # Save result
+        result = InterviewService.save_result(
+            user_id, 
+            final_score, 
+            json.dumps(detailed_feedback), 
+            companies, 
+            evaluated_answers, 
+            questions
+        )
+        
+        if result:
+            result['detailed_feedback'] = detailed_feedback
+            result['evaluated_answers'] = evaluated_answers
+            return jsonify({'success': True, **result})
+        else:
+            return jsonify({'success': False, 'message': 'Failed to save result'}), 500
+        
+    except Exception as e:
+        print(f"Submit voice interview error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': 'Failed to submit interview'}), 500
+
 @interview_bp.route('/profile/history')
 def get_history():
     try:

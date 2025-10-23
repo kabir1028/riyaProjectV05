@@ -35,6 +35,10 @@ def start_interview():
 def interview():
     return render_template('interview.html')
 
+@app.route('/voice-interview')
+def voice_interview():
+    return render_template('voice_interview.html')
+
 @app.route('/results')
 @app.route('/results/<result_id>')
 def results(result_id=None):
