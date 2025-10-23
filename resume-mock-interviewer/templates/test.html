@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test Page</h1>
+    
+    <div>
+        <h2>User Status</h2>
+        <button onclick="checkUser()">Check User</button>
+        <div id="userStatus"></div>
+    </div>
+    
+    <div>
+        <h2>SessionStorage Test</h2>
+        <button onclick="testSessionStorage()">Test SessionStorage</button>
+        <div id="sessionStatus"></div>
+    </div>
+    
+    <div>
+        <h2>Database Test</h2>
+        <button onclick="testDatabase()">Test Database</button>
+        <div id="dbStatus"></div>
+    </div>
+
+    <script>
+        async function checkUser() {
+            try {
+                const response = await fetch('/debug/user');
+                const data = await response.json();
+                document.getElementById('userStatus').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('userStatus').innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        function testSessionStorage() {
+            // Set test data
+            const testData = {
+                id: 'test123',
+                score: 85,
+                feedback: 'Test feedback',
+                companies: ['Google', 'Microsoft']
+            };
+            
+            sessionStorage.setItem('interviewResults', JSON.stringify(testData));
+            
+            // Read it back
+            const stored = sessionStorage.getItem('interviewResults');
+            document.getElementById('sessionStatus').innerHTML = 
+                '<p>Stored: ' + JSON.stringify(testData) + '</p>' +
+                '<p>Retrieved: ' + stored + '</p>';
+        }
+        
+        async function testDatabase() {
+            try {
+                const response = await fetch('/debug/database');
+                const data = await response.json();
+                document.getElementById('dbStatus').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('dbStatus').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

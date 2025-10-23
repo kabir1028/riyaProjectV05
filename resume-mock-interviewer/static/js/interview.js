@@ -6,6 +6,11 @@ let answers = [];
 let selectedRole = '';
 let selectedDifficulty = '';
 
+function getUserId() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user.id || null;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get selections from sessionStorage
     selectedRole = sessionStorage.getItem('selectedRole') || 'Software Engineer';
@@ -283,18 +288,24 @@ async function submitAnswers() {
                 role: selectedRole,
                 difficulty: selectedDifficulty,
                 questions: questions,
-                user_id: JSON.parse(localStorage.getItem('user') || '{}').id || null
+                user_id: getUserId()
             })
         });
         
         const result = await response.json();
         
-        // Store results and additional data in sessionStorage
-        sessionStorage.setItem('interviewResults', JSON.stringify(result));
-        sessionStorage.setItem('interviewAnswers', JSON.stringify(answers));
-        sessionStorage.setItem('interviewQuestions', JSON.stringify(questions));
+        // Store in sessionStorage for immediate results page access
+        const resultWithData = {
+            ...result,
+            answers: answers,
+            questions: questions
+        };
+        sessionStorage.setItem('latestResult', JSON.stringify(resultWithData));
+        console.log('Stored complete result:', resultWithData);
         
         console.log('Stored results:', result);
+        
+        console.log('Results submitted successfully');
         
         // Redirect to results page with ID
         window.location.href = '/results/' + result.id;
@@ -328,9 +339,13 @@ async function submitAnswers() {
         const tempId = 'temp_' + Date.now();
         mockResults.id = tempId;
         
-        sessionStorage.setItem('interviewResults', JSON.stringify(mockResults));
-        sessionStorage.setItem('interviewAnswers', JSON.stringify(answers));
-        sessionStorage.setItem('interviewQuestions', JSON.stringify(questions));
+        const completeResults = {
+            ...mockResults,
+            answers: answers,
+            questions: questions
+        };
+        sessionStorage.setItem('latestResult', JSON.stringify(completeResults));
+        console.log('Stored fallback result:', completeResults);
         
         console.log('Stored calculated results:', mockResults);
         

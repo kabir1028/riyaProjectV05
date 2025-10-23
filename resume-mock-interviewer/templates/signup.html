@@ -26,9 +26,32 @@
         <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
     </form>
     
-    <p style="text-align: center; margin-top: 1rem; color: #4a5568;">
-        Already have an account? <a href="/login" style="color: #22c55e; text-decoration: none; font-weight: 500;">Login here</a>
-    </p>
+    <div style="text-align: center; margin-top: 1.5rem;">
+        <div style="margin: 1.5rem 0; position: relative;">
+            <div style="border-top: 1px solid #e2e8f0; margin: 1rem 0;"></div>
+            <span style="background: white; padding: 0 1rem; color: #6b7280; font-size: 0.9rem; position: absolute; top: -0.6rem; left: 50%; transform: translateX(-50%);">OR</span>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <a href="/api/auth/google" class="btn" style="flex: 1; background: #4285f4; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none;">
+                <span>🔵</span>
+                <span>Google</span>
+            </a>
+            <a href="/api/auth/github" class="btn" style="flex: 1; background: #333; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none;">
+                <span>⚫</span>
+                <span>GitHub</span>
+            </a>
+        </div>
+        
+        <button id="guestSignupBtn" class="btn" style="width: 100%; background: #f59e0b; color: white; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <span>👤</span>
+            <span>Continue as Guest</span>
+        </button>
+        
+        <p style="color: #4a5568;">
+            Already have an account? <a href="/login" style="color: #22c55e; text-decoration: none; font-weight: 500;">Login here</a>
+        </p>
+    </div>
 </div>
 {% endblock %}
 
@@ -57,6 +80,40 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     }
     
     await Auth.signup(email, password);
+});
+
+// Guest signup functionality
+document.getElementById('guestSignupBtn').addEventListener('click', async function() {
+    try {
+        // Generate guest user ID
+        const guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        // Create guest user in database
+        const response = await fetch('/api/create-guest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: guestId })
+        });
+        
+        if (response.ok) {
+            // Store guest user in localStorage
+            localStorage.setItem('user', JSON.stringify({
+                id: guestId,
+                email: 'guest@temp.com',
+                isGuest: true
+            }));
+            
+            Toast.success('Logged in as guest');
+            setTimeout(() => {
+                window.location.href = '/start-interview';
+            }, 1000);
+        } else {
+            Toast.error('Failed to create guest session');
+        }
+    } catch (error) {
+        console.error('Guest signup error:', error);
+        Toast.error('Failed to continue as guest');
+    }
 });
 </script>
 {% endblock %}

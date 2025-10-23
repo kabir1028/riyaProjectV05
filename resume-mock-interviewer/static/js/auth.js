@@ -85,8 +85,14 @@ class Auth {
     }
     
     static getCurrentUser() {
-        const user = localStorage.getItem('user');
-        return user ? JSON.parse(user) : null;
+        try {
+            const user = localStorage.getItem('user');
+            return user ? JSON.parse(user) : null;
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.removeItem('user');
+            return null;
+        }
     }
     
     static isLoggedIn() {
@@ -104,20 +110,15 @@ function updateNavigation() {
     const navMenu = document.querySelector('.nav-menu');
     
     if (user && user.email && navMenu) {
-        // Update navigation for logged-in users
         const loginItem = navMenu.querySelector('a[href="/login"]');
         const signupBtn = navMenu.querySelector('a[href="/signup"]');
         
         if (loginItem) {
             loginItem.innerHTML = `
                 <span class="nav-icon">👤</span>
-                <span class="nav-text">${user.email}</span>
+                <span class="nav-text">Profile</span>
             `;
-            loginItem.href = '#';
-            loginItem.addEventListener('click', (e) => {
-                e.preventDefault();
-                showUserMenu();
-            });
+            loginItem.href = '/profile';
         }
         
         if (signupBtn) {
@@ -127,13 +128,5 @@ function updateNavigation() {
                 Auth.logout();
             });
         }
-    }
-}
-
-function showUserMenu() {
-    // Simple user menu - can be enhanced
-    const userMenu = confirm('Do you want to logout?');
-    if (userMenu) {
-        Auth.logout();
     }
 }

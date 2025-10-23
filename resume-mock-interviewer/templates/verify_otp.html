@@ -71,7 +71,6 @@ document.getElementById('verifyOtpForm').addEventListener('submit', async functi
         
         if (data.success) {
             Toast.success(data.message);
-            // Store email for password reset
             sessionStorage.setItem('resetEmail', email);
             setTimeout(() => {
                 window.location.href = '/reset-password';

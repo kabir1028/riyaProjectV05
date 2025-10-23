@@ -28,84 +28,65 @@ function createParticles() {
 
 function loadResults() {
     try {
-        // Check if we have a result ID from URL
         const resultId = window.resultId;
         
         if (resultId) {
-            // Load specific result by ID
+            // Load specific result from database
             loadResultById(resultId);
-            return;
+        } else {
+            // Load latest result from sessionStorage
+            const latestResult = sessionStorage.getItem('latestResult');
+            if (latestResult) {
+                const result = JSON.parse(latestResult);
+                displayResult(result);
+            } else {
+                Toast.error('No results found');
+                setTimeout(() => window.location.href = '/start-interview', 2000);
+            }
         }
-        
-        const resultsData = sessionStorage.getItem('interviewResults');
-        const answersData = sessionStorage.getItem('interviewAnswers');
-        const questionsData = sessionStorage.getItem('interviewQuestions');
-        
-        console.log('Loading results:', { resultsData, answersData, questionsData });
-        
-        if (!resultsData) {
-            console.log('No results data found, redirecting to start interview');
-            window.location.href = '/start-interview';
-            return;
-        }
-        
-        const results = JSON.parse(resultsData);
-        const answers = answersData ? JSON.parse(answersData) : [];
-        const questions = questionsData ? JSON.parse(questionsData) : [];
-        
-        // Animate score counter
-        animateScore(results.score || 0);
-        
-        // Update progress ring
-        updateProgressRing(results.score || 0);
-        
-        // Display feedback
-        document.getElementById('feedbackText').textContent = results.feedback || 'No feedback available.';
-        
-        // Update performance stats
-        updatePerformanceStats(results, answers);
-        
-        // Create performance chart
-        createPerformanceChart(results, answers);
-        
-        // Display Q&A review
-        displayQAReview(questions, answers);
-        
-        // Display companies
-        displayCompanies(results.companies || []);
-        
-        // Update improvement suggestions
-        updateImprovementSuggestions(results.score);
-        
     } catch (error) {
         console.error('Results loading error:', error);
         Toast.error('Failed to load results');
-        window.location.href = '/start-interview';
+        setTimeout(() => window.location.href = '/start-interview', 2000);
     }
 }
 
+function displayResult(data) {
+    console.log('Displaying result:', data);
+    
+    if (!data || !data.score) {
+        Toast.error('Invalid result data');
+        return;
+    }
+    
+    animateScore(data.score);
+    updateProgressRing(data.score);
+    document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available.';
+    updatePerformanceStats(data, data.answers || []);
+    createPerformanceChart(data, data.answers || []);
+    displayQAReview(data.questions || [], data.answers || []);
+    displayCompanies(data.companies || []);
+    updateImprovementSuggestions(data.score);
+}
+
+
+
+
 function loadResultById(resultId) {
+    console.log('Loading result by ID:', resultId);
+    
     fetch(`/api/get-result/${resultId}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
                 throw new Error(data.error);
             }
-            
-            // Use the loaded data
-            animateScore(data.score);
-            updateProgressRing(data.score);
-            document.getElementById('feedbackText').textContent = data.feedback;
-            updatePerformanceStats(data, data.answers);
-            createPerformanceChart(data, data.answers);
-            displayQAReview(data.questions, data.answers);
-            displayCompanies(data.companies);
-            updateImprovementSuggestions(data.score);
+            displayResult(data);
         })
         .catch(error => {
             console.error('Error loading result:', error);
             Toast.error('Failed to load result');
-            window.location.href = '/start-interview';
+            setTimeout(() => window.location.href = '/start-interview', 2000);
         });
 }
 

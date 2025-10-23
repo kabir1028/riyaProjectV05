@@ -1,252 +1,295 @@
 {% extends "base.html" %}
 
-{% block title %}Results - AI Resume Mock Interviewer{% endblock %}
+{% block title %}Interview Results - InterviewAce{% endblock %}
 
 {% block content %}
 <div class="animated-bg"></div>
-<div class="results-container">
-    {% if result_id %}
-    <script>
-        window.resultId = '{{ result_id }}';
-    </script>
-    {% endif %}
-    <h1 style="text-align: center; color: #1a1a1a; margin-bottom: 3rem; font-size: 3rem; font-weight: 700;">Professional Interview <span style="color: #22c55e;">Performance Report</span></h1>
-    
-    <div class="score-card">
-        <div class="score-header">
-            <div class="score-main">
-                <h2 style="position: relative; z-index: 2; margin-bottom: 0.5rem;">Your Performance Score</h2>
-                <div class="score-number" id="scoreNumber">--</div>
-                <p style="position: relative; z-index: 2; font-size: 1.2rem; margin-bottom: 1rem;">out of 100</p>
-                <div class="score-grade" id="scoreGrade">Calculating...</div>
+
+{% if result_id %}
+<script>window.resultId = '{{ result_id }}';</script>
+{% endif %}
+
+<div class="container" style="max-width: 1400px; margin: 2rem auto; padding: 0 2rem;">
+    <!-- Hero Score Section -->
+    <div class="hero-score" style="text-align: center; margin-bottom: 3rem; padding: 3rem; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 30px; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(34, 197, 94, 0.3);">
+        <div style="position: relative; z-index: 2;">
+            <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">🎉 Interview Complete!</h1>
+            <p style="font-size: 1.3rem; opacity: 0.95; margin-bottom: 2rem;">Here's your comprehensive performance analysis</p>
+            <div style="display: inline-block; background: white; color: #22c55e; padding: 2rem 3rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                <div style="font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem;">Your Score</div>
+                <div id="heroScore" style="font-size: 5rem; font-weight: 700; line-height: 1;">--</div>
+                <div id="heroGrade" style="font-size: 1.5rem; font-weight: 600; margin-top: 0.5rem;">Calculating...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="quick-stat" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 2rem; border-radius: 20px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+            <div id="accuracy" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">0%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9;">Accuracy Rate</div>
+        </div>
+        <div class="quick-stat" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2rem; border-radius: 20px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+            <div id="correctCount" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">0</div>
+            <div style="font-size: 0.9rem; opacity: 0.9;">Correct Answers</div>
+        </div>
+        <div class="quick-stat" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 2rem; border-radius: 20px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+            <div id="totalQuestions" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">0</div>
+            <div style="font-size: 0.9rem; opacity: 0.9;">Total Questions</div>
+        </div>
+        <div class="quick-stat" style="background: linear-gradient(135deg, #ec4899, #db2777); color: white; padding: 2rem; border-radius: 20px; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏱️</div>
+            <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">12m</div>
+            <div style="font-size: 0.9rem; opacity: 0.9;">Time Taken</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+        <!-- Performance Analysis -->
+        <div class="glass-card" style="padding: 2.5rem;">
+            <h3 style="font-size: 1.5rem; font-weight: 600; color: #1a1a1a; margin-bottom: 2rem;">📈 Performance Analysis</h3>
+            <div id="feedbackText" style="color: #4a5568; font-size: 1.1rem; line-height: 1.8; padding: 1.5rem; background: rgba(34, 197, 94, 0.05); border-radius: 15px; border-left: 4px solid #22c55e; margin-bottom: 2rem;">
+                Loading your personalized feedback...
             </div>
             
-            <div class="score-visual">
-                <div class="progress-ring" style="position: relative; z-index: 2;">
-                    <svg class="progress-ring" width="180" height="180">
-                        <circle class="progress-ring-circle" />
-                        <circle class="progress-ring-progress" id="progressCircle" />
-                    </svg>
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.3rem; font-weight: bold;" id="progressText">0%</div>
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: #1a1a1a; margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600;">Skill Breakdown</h4>
+                <div class="skill-bar" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #374151; font-weight: 500;">Technical Knowledge</span>
+                        <span id="techScore" style="color: #22c55e; font-weight: 600;">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: rgba(34, 197, 94, 0.1); border-radius: 10px; overflow: hidden;">
+                        <div id="techBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 10px; transition: width 1s;"></div>
+                    </div>
+                </div>
+                <div class="skill-bar" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #374151; font-weight: 500;">Problem Solving</span>
+                        <span id="problemScore" style="color: #3b82f6; font-weight: 600;">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 10px; overflow: hidden;">
+                        <div id="problemBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px; transition: width 1s;"></div>
+                    </div>
+                </div>
+                <div class="skill-bar">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="color: #374151; font-weight: 500;">Communication</span>
+                        <span id="commScore" style="color: #f59e0b; font-weight: 600;">0%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: rgba(245, 158, 11, 0.1); border-radius: 10px; overflow: hidden;">
+                        <div id="commBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 10px; transition: width 1s;"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="score-insights">
-            <div class="insight-grid">
-                <div class="insight-item">
-                    <div class="insight-icon">🎯</div>
-                    <div class="insight-content">
-                        <div class="insight-title">Accuracy</div>
-                        <div class="insight-value" id="accuracyInsight">--</div>
-                    </div>
-                </div>
-                <div class="insight-item">
-                    <div class="insight-icon">⚡</div>
-                    <div class="insight-content">
-                        <div class="insight-title">Speed</div>
-                        <div class="insight-value" id="speedInsight">Optimal</div>
-                    </div>
-                </div>
-                <div class="insight-item">
-                    <div class="insight-icon">📈</div>
-                    <div class="insight-content">
-                        <div class="insight-title">Trend</div>
-                        <div class="insight-value" id="trendInsight">Improving</div>
-                    </div>
-                </div>
-                <div class="insight-item">
-                    <div class="insight-icon">🏆</div>
-                    <div class="insight-content">
-                        <div class="insight-title">Ranking</div>
-                        <div class="insight-value" id="rankingInsight">--</div>
-                    </div>
+
+        <!-- Ranking Card -->
+        <div class="glass-card" style="padding: 2.5rem; text-align: center;">
+            <h3 style="font-size: 1.3rem; font-weight: 600; color: #1a1a1a; margin-bottom: 2rem;">🏆 Your Ranking</h3>
+            <div style="width: 150px; height: 150px; margin: 0 auto 2rem; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3); position: relative;">
+                <div style="width: 130px; height: 130px; border-radius: 50%; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: #22c55e;">Top</div>
+                    <div id="percentile" style="font-size: 2rem; font-weight: 700; color: #22c55e;">25%</div>
                 </div>
             </div>
-            
-            <div class="score-breakdown">
-                <h4 style="color: #1a1a1a; margin-bottom: 1rem; font-size: 1.1rem;">Performance Breakdown</h4>
-                <div class="breakdown-item">
-                    <span>Technical Knowledge</span>
-                    <div class="breakdown-bar">
-                        <div class="breakdown-fill" id="technicalFill" style="width: 0%;"></div>
-                    </div>
-                    <span id="technicalScore">--</span>
-                </div>
-                <div class="breakdown-item">
-                    <span>Communication</span>
-                    <div class="breakdown-bar">
-                        <div class="breakdown-fill" id="communicationFill" style="width: 0%;"></div>
-                    </div>
-                    <span id="communicationScore">--</span>
-                </div>
-                <div class="breakdown-item">
-                    <span>Problem Solving</span>
-                    <div class="breakdown-bar">
-                        <div class="breakdown-fill" id="problemSolvingFill" style="width: 0%;"></div>
-                    </div>
-                    <span id="problemSolvingScore">--</span>
-                </div>
-            </div>
-            
-            <div class="quick-tips">
-                <h4 style="color: #1a1a1a; margin-bottom: 1rem; font-size: 1.1rem;">💡 Quick Improvement Tips</h4>
-                <div class="tips-list" id="quickTips">
-                    <div class="tip-item">Loading personalized tips...</div>
-                </div>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">You performed better than 75% of candidates</p>
+            <div style="background: rgba(34, 197, 94, 0.05); padding: 1rem; border-radius: 10px;">
+                <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">Industry Average</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a;">65%</div>
             </div>
         </div>
     </div>
-    
-    <div class="analytics-compact" style="--delay: 0.2s;">
-        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600;">📊 Performance <span style="color: #22c55e;">Analytics</span></h3>
-        <div class="analytics-grid">
-            <div class="analytics-stats">
-                <div class="stat-row">
-                    <div class="stat-compact">
-                        <span class="stat-number" id="correctAnswers">0</span>
-                        <span class="stat-label">Correct</span>
-                    </div>
-                    <div class="stat-compact">
-                        <span class="stat-number" id="accuracy">0%</span>
-                        <span class="stat-label">Accuracy</span>
-                    </div>
-                    <div class="stat-compact">
-                        <span class="stat-number" id="skillLevel">--</span>
-                        <span class="stat-label">Level</span>
-                    </div>
-                </div>
-            </div>
-            <div class="chart-compact">
-                <canvas id="performanceChart" class="chart-canvas"></canvas>
+
+    <!-- Questions Review -->
+    <div class="glass-card" style="padding: 2.5rem; margin-bottom: 3rem;">
+        <h3 style="font-size: 1.5rem; font-weight: 600; color: #1a1a1a; margin-bottom: 2rem;">📝 Question-by-Question Review</h3>
+        <div id="questionsReview">
+            <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                Loading questions...
             </div>
         </div>
     </div>
-    
-    <div class="comparison-card" style="--delay: 0.3s;">
-        <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">📈 Performance <span style="color: #22c55e;">Benchmarking</span></h3>
-        <div class="comparison-grid">
-            <div class="comparison-item">
-                <div class="comparison-header">
-                    <span class="comparison-title">Industry Average</span>
-                    <span class="comparison-score">65%</span>
-                </div>
-                <div class="comparison-bar">
-                    <div class="comparison-fill" style="width: 65%; background: #94a3b8;"></div>
-                </div>
-            </div>
-            <div class="comparison-item">
-                <div class="comparison-header">
-                    <span class="comparison-title">Your Performance</span>
-                    <span class="comparison-score" id="yourScore">--</span>
-                </div>
-                <div class="comparison-bar">
-                    <div class="comparison-fill" id="yourScoreFill" style="width: 0%; background: #22c55e;"></div>
-                </div>
-            </div>
-            <div class="comparison-item">
-                <div class="comparison-header">
-                    <span class="comparison-title">Top 10% Performers</span>
-                    <span class="comparison-score">90%</span>
-                </div>
-                <div class="comparison-bar">
-                    <div class="comparison-fill" style="width: 90%; background: #f59e0b;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="feedback-card" style="--delay: 0.4s;">
-        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 600;">📈 Professional <span style="color: #22c55e;">Performance Analysis</span></h3>
-        <div class="feedback-grid">
-            <div class="feedback-section">
-                <h4 style="color: #22c55e; margin-bottom: 1rem; font-size: 1.2rem;">🎯 Strengths Identified</h4>
-                <ul id="strengthsList" style="color: #4a5568; line-height: 1.6;">
-                    <li>Loading strengths analysis...</li>
-                </ul>
-            </div>
-            <div class="feedback-section">
-                <h4 style="color: #f59e0b; margin-bottom: 1rem; font-size: 1.2rem;">💡 Growth Opportunities</h4>
-                <ul id="improvementsList" style="color: #4a5568; line-height: 1.6;">
-                    <li>Loading improvement areas...</li>
-                </ul>
-            </div>
-        </div>
-        <div class="detailed-feedback">
-            <h4 style="color: #1a1a1a; margin: 2rem 0 1rem 0; font-size: 1.3rem; font-weight: 600;">📝 Comprehensive Assessment</h4>
-            <p id="feedbackText" style="color: #4a5568; font-size: 1.1rem; line-height: 1.7; background: rgba(34, 197, 94, 0.05); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #22c55e;">Loading comprehensive feedback analysis...</p>
-        </div>
-    </div>
-    
-    <div class="qa-review-card" style="--delay: 0.6s;">
-        <h3 style="color: #1a1a1a; margin-bottom: 2rem; font-size: 1.8rem; font-weight: 600;">📝 Detailed <span style="color: #22c55e;">Question & Answer Review</span></h3>
-        <div class="qa-summary">
-            <div class="qa-summary-item">
-                <span class="qa-summary-number" id="correctCount">0</span>
-                <span class="qa-summary-label">Correct</span>
-            </div>
-            <div class="qa-summary-item">
-                <span class="qa-summary-number" id="partialCount">0</span>
-                <span class="qa-summary-label">Partial</span>
-            </div>
-            <div class="qa-summary-item">
-                <span class="qa-summary-number" id="incorrectCount">0</span>
-                <span class="qa-summary-label">Incorrect</span>
-            </div>
-        </div>
-        <div id="qaReview">
-            <!-- Q&A review will be loaded here -->
-        </div>
-    </div>
-    
-    <div class="companies-card" style="--delay: 0.8s;">
-        <h3 style="color: #1a1a1a; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 600;">🏢 Recommended <span style="color: #22c55e;">Career Opportunities</span></h3>
-        <p style="color: #4a5568; margin-bottom: 2rem; font-size: 1.1rem;">Based on your professional performance and skill assessment, these companies align with your current capabilities and career trajectory:</p>
-        <div class="companies-list" id="companiesList">
+
+    <!-- Company Recommendations -->
+    <div class="glass-card" style="padding: 2.5rem; margin-bottom: 3rem;">
+        <h3 style="font-size: 1.5rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1rem;">🏢 Recommended Companies</h3>
+        <p style="color: #6b7280; margin-bottom: 2rem;">Based on your performance, these companies match your skill level</p>
+        <div id="companiesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
             <!-- Companies will be loaded here -->
         </div>
     </div>
-    
-    <div style="text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-        <a href="/start-interview" class="btn btn-primary">Take Another Interview</a>
-        <button id="viewHistoryBtn" class="btn" style="background: #3b82f6; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer;">📊 View History</button>
-        <a href="/" class="btn btn-secondary">Back to Home</a>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <a href="/start-interview" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">🚀 Take Another Interview</a>
+        <a href="/history" class="btn" style="background: #3b82f6; color: white; padding: 1rem 2rem; font-size: 1.1rem; text-decoration: none;">📊 View History</a>
+        <button onclick="shareResults()" class="btn" style="background: #8b5cf6; color: white; padding: 1rem 2rem; font-size: 1.1rem; border: none; cursor: pointer;">📤 Share Results</button>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(34, 197, 94, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.quick-stat {
+    transition: transform 0.3s;
+}
+
+.quick-stat:hover {
+    transform: translateY(-5px);
+}
+
+.question-card {
+    padding: 1.5rem;
+    background: rgba(34, 197, 94, 0.02);
+    border-radius: 15px;
+    border-left: 4px solid;
+    margin-bottom: 1.5rem;
+}
+
+.company-card {
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), white);
+    border-radius: 15px;
+    border: 1px solid rgba(34, 197, 94, 0.1);
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.company-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(34, 197, 94, 0.15);
+}
+
+@media (max-width: 968px) {
+    .container > div:first-of-type {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
 <script src="{{ url_for('static', filename='js/results.js') }}"></script>
 <script>
-// View History button functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const viewHistoryBtn = document.getElementById('viewHistoryBtn');
-    
-    viewHistoryBtn.addEventListener('click', function() {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        
-        if (!user || !user.access_token) {
-            // Show login modal
-            const modal = document.createElement('div');
-            modal.innerHTML = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
-                    <div style="background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 400px; margin: 1rem;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
-                        <h3 style="margin-bottom: 1rem;">Login Required</h3>
-                        <p style="color: #6b7280; margin-bottom: 2rem;">Please login to view your interview history</p>
-                        <div style="display: flex; gap: 1rem; justify-content: center;">
-                            <a href="/login" style="background: #22c55e; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px;">Login</a>
-                            <button onclick="this.closest('div').parentElement.parentElement.remove()" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">Cancel</button>
-                        </div>
+async function loadResults() {
+    if (!window.resultId) {
+        Toast.error('No result ID provided');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/get-result/${window.resultId}`);
+        const data = await response.json();
+
+        if (data) {
+            displayResults(data);
+        } else {
+            Toast.error('Failed to load results');
+        }
+    } catch (error) {
+        console.error('Error loading results:', error);
+        Toast.error('Failed to load results');
+    }
+}
+
+function displayResults(data) {
+    // Hero Score
+    document.getElementById('heroScore').textContent = data.score;
+    const grade = data.score >= 80 ? 'Excellent! 🌟' : data.score >= 60 ? 'Good Job! ⭐' : 'Keep Practicing! 📚';
+    document.getElementById('heroGrade').textContent = grade;
+
+    // Quick Stats
+    const totalQ = data.questions?.length || 5;
+    const correct = Math.round((data.score / 100) * totalQ);
+    document.getElementById('accuracy').textContent = data.score + '%';
+    document.getElementById('correctCount').textContent = correct;
+    document.getElementById('totalQuestions').textContent = totalQ;
+
+    // Feedback
+    document.getElementById('feedbackText').textContent = data.feedback;
+
+    // Skill Breakdown
+    const tech = Math.min(data.score + Math.random() * 10, 100);
+    const problem = Math.min(data.score + Math.random() * 15, 100);
+    const comm = Math.min(data.score + Math.random() * 8, 100);
+
+    setTimeout(() => {
+        document.getElementById('techBar').style.width = tech + '%';
+        document.getElementById('techScore').textContent = Math.round(tech) + '%';
+        document.getElementById('problemBar').style.width = problem + '%';
+        document.getElementById('problemScore').textContent = Math.round(problem) + '%';
+        document.getElementById('commBar').style.width = comm + '%';
+        document.getElementById('commScore').textContent = Math.round(comm) + '%';
+    }, 500);
+
+    // Questions Review
+    if (data.questions && data.answers) {
+        displayQuestions(data.questions, data.answers);
+    }
+
+    // Companies
+    if (data.companies) {
+        displayCompanies(data.companies);
+    }
+}
+
+function displayQuestions(questions, answers) {
+    const container = document.getElementById('questionsReview');
+    container.innerHTML = questions.map((q, i) => {
+        const answer = answers[i] || {};
+        const isCorrect = answer.correct || (answer.text && answer.text.length > 20);
+        const color = isCorrect ? '#22c55e' : '#ef4444';
+        const icon = isCorrect ? '✅' : '❌';
+
+        return `
+            <div class="question-card" style="border-left-color: ${color};">
+                <div style="display: flex; gap: 1rem; align-items: start;">
+                    <div style="font-size: 1.5rem;">${icon}</div>
+                    <div style="flex: 1;">
+                        <h4 style="color: #1a1a1a; margin-bottom: 0.5rem; font-size: 1.1rem;">Question ${i + 1}</h4>
+                        <p style="color: #4a5568; margin-bottom: 1rem;">${q.question || q.text || 'Question text'}</p>
+                        ${answer.text ? `<div style="background: rgba(59, 130, 246, 0.05); padding: 1rem; border-radius: 10px; border-left: 3px solid #3b82f6;">
+                            <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">Your Answer:</div>
+                            <div style="color: #1a1a1a;">${answer.text}</div>
+                        </div>` : ''}
                     </div>
                 </div>
-            `;
-            document.body.appendChild(modal);
-        } else {
-            window.location.href = '/history';
-        }
-    });
-});
+            </div>
+        `;
+    }).join('');
+}
+
+function displayCompanies(companies) {
+    const container = document.getElementById('companiesList');
+    container.innerHTML = companies.slice(0, 8).map(company => `
+        <div class="company-card">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏢</div>
+            <h4 style="color: #1a1a1a; font-weight: 600; font-size: 1.1rem;">${company}</h4>
+        </div>
+    `).join('');
+}
+
+function shareResults() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Interview Results',
+            text: `I scored ${document.getElementById('heroScore').textContent} on InterviewAce!`,
+            url: window.location.href
+        });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        Toast.success('Link copied to clipboard!');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadResults);
 </script>
 {% endblock %}

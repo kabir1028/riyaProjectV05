@@ -45,3 +45,65 @@ function showLoading(element) {
 function showError(element, message) {
     element.innerHTML = `<div style="color: #dc3545; text-align: center; padding: 2rem;">${message}</div>`;
 }
+
+// Check for OAuth success on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('oauth_success') === 'true') {
+        try {
+            const response = await fetch('/api/auth/current-user');
+            const data = await response.json();
+            
+            if (data.success && data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                if (typeof Toast !== 'undefined') {
+                    Toast.success('Login successful!');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+        
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        if (typeof updateNavigation === 'function') {
+            updateNavigation();
+        }
+    }
+    
+    if (urlParams.get('error') === 'oauth_failed') {
+        if (typeof Toast !== 'undefined') {
+            Toast.error('OAuth login failed. Please try again.');
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+
+// Update navigation based on login status
+function updateNavigation() {
+    const user = Auth.getCurrentUser();
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (user && user.email && navMenu) {
+        const loginItem = navMenu.querySelector('a[href="/login"]');
+        const signupBtn = navMenu.querySelector('a[href="/signup"]');
+        
+        if (loginItem) {
+            loginItem.innerHTML = `
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Profile</span>
+            `;
+            loginItem.href = '/profile';
+        }
+        
+        if (signupBtn) {
+            signupBtn.textContent = 'Logout';
+            signupBtn.href = '#';
+            signupBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                Auth.logout();
+            });
+        }
+    }
+}
