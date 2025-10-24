@@ -2,6 +2,10 @@
 
 {% block title %}My Profile - InterviewAce{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="animated-bg"></div>
 
@@ -99,9 +103,6 @@
             <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
                 <h3 style="font-size: 1.3rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1.5rem;">🎯 Skills & Interests</h3>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;" id="skillsList">
-                    <span class="skill-tag">JavaScript</span>
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">React</span>
                     <button onclick="addSkill()" style="background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px dashed #22c55e; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; cursor: pointer;">+ Add Skill</button>
                 </div>
             </div>
@@ -139,193 +140,8 @@
     </div>
 </div>
 
-<style>
-.glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    border: 1px solid rgba(34, 197, 94, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
+{% endblock %}
 
-.skill-tag {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 26px;
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
-}
-
-input:checked + .toggle-slider {
-    background-color: #22c55e;
-}
-
-input:checked + .toggle-slider:before {
-    transform: translateX(24px);
-}
-
-@media (max-width: 968px) {
-    .container > div {
-        grid-template-columns: 1fr !important;
-    }
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const user = Auth.getCurrentUser();
-    if (!user) {
-        window.location.href = '/login';
-        return;
-    }
-
-    document.getElementById('displayEmail').textContent = user.email;
-    document.getElementById('displayName').textContent = user.email.split('@')[0];
-    document.getElementById('memberSince').textContent = 'Jan 2025';
-
-    // Load profile data
-    loadProfileData(user.id);
-
-    // Profile form submission
-    document.getElementById('profileForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveProfile();
-    });
-
-    // Update profile completion
-    updateProfileCompletion();
-});
-
-async function loadProfileData(userId) {
-    try {
-        // Load interview history
-        const historyResponse = await fetch(`/api/profile/history?user_id=${userId}`);
-        const historyData = await historyResponse.json();
-        if (historyData.success) {
-            document.getElementById('totalInterviews').textContent = historyData.total_interviews;
-        }
-        
-        // Load profile data
-        const profileResponse = await fetch('/api/auth/profile');
-        const profileData = await profileResponse.json();
-        if (profileData.success && profileData.profile) {
-            const profile = profileData.profile;
-            document.getElementById('fullName').value = profile.name || '';
-            document.getElementById('phone').value = profile.phone || '';
-            document.getElementById('currentRole').value = profile.user_role || '';
-            document.getElementById('experience').value = profile.experience || '';
-            document.getElementById('location').value = profile.location || '';
-            document.getElementById('bio').value = profile.bio || '';
-            
-            if (profile.name) {
-                document.getElementById('displayName').textContent = profile.name;
-            }
-            
-            updateProfileCompletion();
-        }
-    } catch (error) {
-        console.error('Error loading profile:', error);
-    }
-}
-
-function updateProfileCompletion() {
-    const fields = ['fullName', 'phone', 'currentRole', 'experience', 'location', 'bio'];
-    const filled = fields.filter(id => document.getElementById(id).value.trim()).length;
-    const percentage = Math.round((filled / fields.length) * 100);
-    
-    document.getElementById('profileCompletion').textContent = percentage + '% Complete';
-    document.getElementById('profileProgress').style.width = percentage + '%';
-}
-
-document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea').forEach(el => {
-    el.addEventListener('input', updateProfileCompletion);
-});
-
-async function saveProfile() {
-    try {
-        const profileData = {
-            name: document.getElementById('fullName').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            user_role: document.getElementById('currentRole').value.trim(),
-            experience: document.getElementById('experience').value,
-            location: document.getElementById('location').value.trim(),
-            bio: document.getElementById('bio').value.trim()
-        };
-        
-        const response = await fetch('/api/auth/profile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(profileData)
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            Toast.success('Profile updated successfully!');
-            if (profileData.name) {
-                document.getElementById('displayName').textContent = profileData.name;
-            }
-        } else {
-            Toast.error(data.message || 'Failed to update profile');
-        }
-    } catch (error) {
-        console.error('Error saving profile:', error);
-        Toast.error('Failed to update profile');
-    }
-}
-
-function addSkill() {
-    const skill = prompt('Enter skill name:');
-    if (skill) {
-        const tag = document.createElement('span');
-        tag.className = 'skill-tag';
-        tag.textContent = skill;
-        document.getElementById('skillsList').insertBefore(tag, document.getElementById('skillsList').lastElementChild);
-    }
-}
-
-function changePassword() {
-    window.location.href = '/forgot-password';
-}
-</script>
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 {% endblock %}

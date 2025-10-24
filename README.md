@@ -1,4 +1,4 @@
-# 🎯 InterviewAce - AI Mock Interview Platform
+# InterviewAce - AI Mock Interview Platform
 
 > A production-ready, full-stack web application that provides AI-powered mock interviews with intelligent scoring, instant feedback, and company recommendations.
 
@@ -7,16 +7,16 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-yellow.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-Educational-red.svg)](LICENSE)
 
-## ✨ Key Features
+## Key Features
 
-### 🎓 Interview System
+### Interview System
 - **900+ Curated Questions** across 3 roles and 3 difficulty levels
 - **Intelligent Scoring Algorithm** with instant feedback
 - **Company Recommendations** based on performance
 - **Interview History** tracking (last 5 results)
 - **Mixed Question Types** (Multiple Choice + Short Answer)
 
-### 🔐 Authentication
+### Authentication
 - **Local Authentication** with email verification
 - **Google OAuth 2.0** integration
 - **GitHub OAuth** integration
@@ -24,12 +24,50 @@
 - **Password Reset** with OTP
 - **Professional Email Templates** via Brevo SMTP
 
-### 📊 Roles & Difficulty Levels
+### Roles & Difficulty Levels
 - **Software Engineer** (Beginner, Intermediate, Advanced)
 - **AI Scientist** (Beginner, Intermediate, Advanced)
 - **Data Scientist** (Beginner, Intermediate, Advanced)
 
-## 🏗️ Project Structure
+## System Architecture
+
+### High-Level Architecture
+```
+┌─────────────┐
+│   Browser   │ ← User Interface
+└──────┬──────┘
+       │ HTTP/HTTPS
+       ▼
+┌─────────────────────────────┐
+│   Flask Application         │
+│  ┌────────────────────────┐ │
+│  │ Controllers (Routes)   │ │ ← API Endpoints
+│  └────────────────────────┘ │
+│  ┌────────────────────────┐ │
+│  │ Services (Logic)       │ │ ← Business Logic
+│  └────────────────────────┘ │
+│  ┌────────────────────────┐ │
+│  │ Models (Data)          │ │ ← Data Layer
+│  └────────────────────────┘ │
+└──────────┬──────────────────┘
+           │
+           ▼
+┌─────────────────────────────┐
+│   PostgreSQL Database       │ ← Data Storage
+│   - users table             │
+│   - results table           │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│   External Services         │
+│   - Brevo SMTP (Email)      │ ← Email Delivery
+│   - Google OAuth            │ ← Authentication
+│   - GitHub OAuth            │ ← Authentication
+│   - Groq AI API             │ ← AI Features
+└─────────────────────────────┘
+```
+
+### Project Structure
 ```
 resume-mock-interviewer/
 ├── app.py                      # Main application entry point
@@ -83,16 +121,17 @@ resume-mock-interviewer/
 │   └── questions.json         # Question bank (900+ questions)
 │
 └── docs/                      # Documentation
-    ├── README.md
-    ├── PROJECT_DETAILS.md
-    ├── SETUP_GUIDE.md
-    ├── VERIFICATION_SYSTEM.md
-    ├── UNIFIED_ACCOUNT_SYSTEM.md
-    ├── OAUTH_SETUP.md
-    └── FEATURES_IMPLEMENTED.md
+    ├── README.md                      # Main documentation
+    ├── PROJECT_DETAILS.md             # Comprehensive details
+    ├── COMPLETE_SETUP_GUIDE.md        # Setup instructions
+    ├── ARCHITECTURE_DIAGRAMS.md       # System diagrams
+    ├── DATABASE_DOCUMENTATION.md      # Database details
+    ├── PROJECT_TIMELINE.md            # Development timeline
+    ├── AI_INTERVIEW_SYSTEM.md         # AI features
+    └── GROQ_API_SETUP.md             # AI API setup
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -163,47 +202,121 @@ GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 ```
 
-## 🗄️ Database Schema
+## Database Schema
 
-### Users Table
-```sql
-CREATE TABLE users (
-    id VARCHAR(255) PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255),
-    name VARCHAR(255),
-    avatar_url TEXT,
-    auth_provider VARCHAR(50) DEFAULT 'local',
-    oauth_id VARCHAR(255),
-    is_guest BOOLEAN DEFAULT FALSE,
-    is_verified BOOLEAN DEFAULT FALSE,
-    verification_token VARCHAR(255),
-    reset_otp VARCHAR(10),
-    otp_expiry TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+### Entity Relationship Diagram
+```
+┌─────────────────────────────────────┐
+│          users (Primary)            │
+├─────────────────────────────────────┤
+│ PK  id                VARCHAR(255)  │
+│ UQ  email             VARCHAR(255)  │
+│     password_hash     VARCHAR(255)  │
+│     name              VARCHAR(255)  │
+│     avatar_url        TEXT          │
+│     auth_provider     VARCHAR(50)   │
+│     oauth_id          VARCHAR(255)  │
+│     is_guest          BOOLEAN       │
+│     is_verified       BOOLEAN       │
+│     verification_token VARCHAR(255) │
+│     reset_otp         VARCHAR(10)   │
+│     otp_expiry        TIMESTAMP     │
+│     phone             VARCHAR(50)   │
+│     user_role         VARCHAR(255)  │
+│     experience        VARCHAR(50)   │
+│     location          VARCHAR(255)  │
+│     bio               TEXT          │
+│     created_at        TIMESTAMP     │
+└──────────────┬──────────────────────┘
+               │ 1:N
+               │ (One user → Many results)
+               ▼
+┌─────────────────────────────────────┐
+│        results (Foreign)            │
+├─────────────────────────────────────┤
+│ PK  id                VARCHAR(255)  │
+│ FK  user_id           VARCHAR(255)  │ → users.id
+│     score             INTEGER       │
+│     feedback          TEXT          │
+│     companies         TEXT (JSON)   │
+│     answers           TEXT (JSON)   │
+│     questions         TEXT (JSON)   │
+│     created_at        TIMESTAMP     │
+└─────────────────────────────────────┘
+
+Constraints:
+- Foreign Key: results.user_id → users.id ON DELETE CASCADE
+- Unique: users.email
+- Auto-cleanup: Keep only last 5 results per user
 ```
 
-### Results Table
-```sql
-CREATE TABLE results (
-    id VARCHAR(255) PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL,
-    score INTEGER NOT NULL,
-    feedback TEXT,
-    companies TEXT,
-    answers TEXT,
-    questions TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-);
+**See [DATABASE_DOCUMENTATION.md](DATABASE_DOCUMENTATION.md) for complete schema details**
+
+## How It Works
+
+### Interview Flow Diagram
+```
+┌─────────────┐
+│   START     │
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────┐
+│ User Logged In? │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    NO        YES
+    │         │
+    ▼         ▼
+┌────────┐  ┌──────────────────┐
+│Redirect│  │ Select Role      │
+│to Login│  │ - Software Eng   │
+└────────┘  │ - AI Scientist   │
+            │ - Data Scientist │
+            └────────┬─────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ Select Difficulty│
+            │ - Beginner       │
+            │ - Intermediate   │
+            │ - Advanced       │
+            └────────┬─────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ Answer 10 Qs     │
+            │ (MCQ + Text)     │
+            └────────┬─────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ Calculate Score  │
+            │ Generate Feedback│
+            └────────┬─────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ Show Results     │
+            │ - Score (0-100)  │
+            │ - Feedback       │
+            │ - Companies      │
+            └────────┬─────────┘
+                     │
+                     ▼
+            ┌──────────────────┐
+            │ Save to History  │
+            │ (Last 5 results) │
+            └────────┬─────────┘
+                     │
+                     ▼
+                ┌────────┐
+                │  END   │
+                └────────┘
 ```
 
-**Note:** Automatically keeps last 5 results per user
-
-## 🎯 How It Works
-
-### Interview Flow
+### Step-by-Step Process
 1. **Select Role** - Choose from Software Engineer, AI Scientist, or Data Scientist
 2. **Choose Difficulty** - Beginner, Intermediate, or Advanced
 3. **Answer Questions** - 10 questions (mix of MCQ and short-answer)
@@ -219,14 +332,36 @@ CREATE TABLE results (
   - 60-79: Good (mid-tier companies)
   - 0-59: Needs improvement
 
+### Authentication Flow
+```
+┌──────────────────────────────────────────────────────┐
+│              Authentication Methods                  │
+└──────────────────────────────────────────────────────┘
+
+1. Local Authentication:
+   User → Signup → Email Verification → Login → Access
+
+2. Google OAuth:
+   User → Google Login → Auto-Verified → Access
+
+3. GitHub OAuth:
+   User → GitHub Login → Auto-Verified → Access
+
+┌──────────────────────────────────────────────────────┐
+│           Unified Account System                     │
+│  One Email = One Account (All Methods Work)          │
+└──────────────────────────────────────────────────────┘
+```
+
 ### Authentication Options
 1. **Local Signup** - Email + password with verification
 2. **Google Login** - One-click OAuth authentication
 3. **GitHub Login** - Developer-friendly OAuth
 
-**Unified Accounts:** One email = one account across all login methods
+**Unified Accounts:** One email = one account across all login methods  
+**See [ARCHITECTURE_DIAGRAMS.md](ARCHITECTURE_DIAGRAMS.md) for detailed flow diagrams**
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Flask 2.3.3** - Web framework
@@ -247,74 +382,82 @@ CREATE TABLE results (
 - **Google OAuth 2.0** - Social authentication
 - **GitHub OAuth** - Developer authentication
 
-## 📚 Documentation
+## Documentation
 
 For detailed information, check out:
 - **[PROJECT_DETAILS.md](PROJECT_DETAILS.md)** - Comprehensive project documentation
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Detailed setup instructions
-- **[VERIFICATION_SYSTEM.md](VERIFICATION_SYSTEM.md)** - Email verification details
-- **[UNIFIED_ACCOUNT_SYSTEM.md](UNIFIED_ACCOUNT_SYSTEM.md)** - Account merging explanation
-- **[OAUTH_SETUP.md](OAUTH_SETUP.md)** - OAuth configuration guide
-- **[FEATURES_IMPLEMENTED.md](FEATURES_IMPLEMENTED.md)** - Feature checklist
+- **[COMPLETE_SETUP_GUIDE.md](COMPLETE_SETUP_GUIDE.md)** - Detailed setup instructions with troubleshooting
+- **[ARCHITECTURE_DIAGRAMS.md](ARCHITECTURE_DIAGRAMS.md)** - System architecture, flowcharts, and diagrams
+- **[DATABASE_DOCUMENTATION.md](DATABASE_DOCUMENTATION.md)** - Complete database schema and queries
+- **[PROJECT_TIMELINE.md](PROJECT_TIMELINE.md)** - Day-by-day development timeline (Oct 1-19)
+- **[AI_INTERVIEW_SYSTEM.md](AI_INTERVIEW_SYSTEM.md)** - AI integration details
+- **[GROQ_API_SETUP.md](GROQ_API_SETUP.md)** - Groq AI API configuration
 
-## 🔐 Security Features
+## Security Features
 
-- ✅ Werkzeug password encryption
-- ✅ Email verification enforcement
-- ✅ Token-based authentication
-- ✅ OAuth 2.0 security
-- ✅ SQL injection prevention
-- ✅ Session management
-- ✅ OTP expiry (10 minutes)
-- ✅ Single-use verification tokens
+- Werkzeug password encryption
+- Email verification enforcement
+- Token-based authentication
+- OAuth 2.0 security
+- SQL injection prevention
+- Session management
+- OTP expiry (10 minutes)
+- Single-use verification tokens
 
-## 📊 Project Statistics
+## Project Statistics
 
+### Content
 - **900+** Interview questions
-- **3** Career roles
-- **3** Difficulty levels per role
-- **14** HTML pages
-- **3** Authentication methods
-- **2** Professional email templates
+- **3** Career roles (Software Engineer, AI Scientist, Data Scientist)
+- **3** Difficulty levels per role (Beginner, Intermediate, Advanced)
+- **10** Questions per interview
 - **5** Results stored per user
 
-## 🎯 Key Achievements
+### Technical
+- **14** HTML templates
+- **12** Python modules
+- **5** JavaScript files
+- **2** CSS stylesheets
+- **3** Authentication methods
+- **2** Professional email templates
+- **2** Database tables
+- **4** External service integrations
 
-✅ Complete authentication system (Local + OAuth)  
-✅ Email verification with professional templates  
-✅ Unified account system (one email = one account)  
-✅ Intelligent scoring algorithm  
-✅ Company recommendations  
-✅ Interview history tracking  
-✅ Password reset with OTP  
-✅ Responsive UI design  
-✅ Production-ready codebase  
+**See [PROJECT_TIMELINE.md](PROJECT_TIMELINE.md) for day-by-day breakdown**
+
+## Key Achievements
+
+- Complete authentication system (Local + OAuth)  
+- Email verification with professional templates  
+- Unified account system (one email = one account)  
+- Intelligent scoring algorithm  
+- Company recommendations  
+- Interview history tracking  
+- Password reset with OTP  
+- Responsive UI design  
+- Production-ready codebase  
 
 ## 🚀 Future Enhancements
 
-- [ ] AI-powered answer analysis with GPT
-- [ ] Video interview recording
-- [ ] Live coding challenges
-- [ ] Peer-to-peer mock interviews
-- [ ] Company-specific interview prep
-- [ ] Advanced analytics dashboard
-- [ ] Mobile applications (iOS/Android)
-- [ ] Resume analysis and feedback
+-  AI-powered answer analysis with GPT
+-  Video interview recording
+-  Live coding challenges
+-  Peer-to-peer mock interviews
+-  Company-specific interview prep
+-  Advanced analytics dashboard
+-  Mobile applications (iOS/Android)
+-  Resume analysis and feedback
 
-## 📄 License
+## License
 
 This project is built for educational and portfolio purposes.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, issues, and feature requests are welcome!
 
-## 📞 Support
+## Support
 
 For questions or support, please refer to the documentation files or open an issue.
 
 ---
-
-**Built with ❤️ using Flask, PostgreSQL, and dedication to helping candidates succeed in their interviews.**
-
-**Status:** ✅ Production-Ready | 🎉 Fully Functional

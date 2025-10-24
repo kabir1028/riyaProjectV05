@@ -2,154 +2,12 @@
 
 {% block title %}Voice Interview - InterviewAce{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/voice_interview.css') }}">
+{% endblock %}
+
 {% block content %}
-<style>
-.voice-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-}
-
-.voice-card {
-    background: white;
-    border-radius: 20px;
-    padding: 3rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-}
-
-.ai-avatar-large {
-    width: 120px;
-    height: 120px;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    margin: 0 auto 2rem;
-    position: relative;
-}
-
-.pulse-ring {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 3px solid #22c55e;
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.5); opacity: 0; }
-}
-
-.question-display {
-    text-align: center;
-    margin-bottom: 2rem;
-    min-height: 100px;
-}
-
-.question-text {
-    font-size: 1.5rem;
-    color: #1a1a1a;
-    font-weight: 600;
-    line-height: 1.6;
-}
-
-.voice-controls {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-}
-
-.voice-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    font-size: 2rem;
-    transition: all 0.3s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.voice-btn:hover {
-    transform: scale(1.1);
-}
-
-.btn-record {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-}
-
-.btn-record.recording {
-    animation: recordPulse 1s infinite;
-}
-
-@keyframes recordPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-    50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-}
-
-.btn-stop {
-    background: #6b7280;
-    color: white;
-}
-
-.btn-play {
-    background: #3b82f6;
-    color: white;
-}
-
-.transcript-box {
-    background: #f9fafb;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-    min-height: 100px;
-    margin: 2rem 0;
-}
-
-.transcript-text {
-    color: #374151;
-    font-size: 1rem;
-    line-height: 1.6;
-}
-
-.status-indicator {
-    text-align: center;
-    padding: 1rem;
-    border-radius: 10px;
-    margin: 1rem 0;
-    font-weight: 600;
-}
-
-.status-listening {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-}
-
-.status-processing {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-}
-
-.status-ready {
-    background: rgba(34, 197, 94, 0.1);
-    color: #16a34a;
-}
-
-.progress-info {
-    text-align: center;
-    color: #6b7280;
-    margin: 1rem 0;
-}
-</style>
-
 <div class="voice-container">
-    <!-- Progress Bar -->
     <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
             <span style="font-weight: 600; color: #1a1a1a;">Voice Interview Progress</span>
@@ -160,26 +18,21 @@
         </div>
     </div>
 
-    <!-- Main Interview Card -->
     <div class="voice-card">
-        <!-- AI Avatar -->
         <div class="ai-avatar-large" id="aiAvatar">
             <div class="pulse-ring" id="pulseRing" style="display: none;"></div>
             🤖
         </div>
 
-        <!-- Question Display -->
         <div class="question-display">
             <div class="progress-info" id="questionNumber">Question 1 of 10</div>
             <div class="question-text" id="questionText">Loading your first question...</div>
         </div>
 
-        <!-- Status Indicator -->
         <div class="status-indicator status-ready" id="statusIndicator">
             🎤 Ready to start - Click record when ready
         </div>
 
-        <!-- Voice Controls -->
         <div class="voice-controls">
             <button class="voice-btn btn-record" id="recordBtn" onclick="startRecording()">
                 🎤
@@ -192,13 +45,11 @@
             </button>
         </div>
 
-        <!-- Transcript Box -->
         <div class="transcript-box">
             <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">Your Answer:</div>
             <div class="transcript-text" id="transcriptText">Your spoken answer will appear here...</div>
         </div>
 
-        <!-- Navigation -->
         <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
             <button id="prevBtn" class="btn btn-secondary" onclick="previousQuestion()" style="display: none;">
                 ← Previous
@@ -209,265 +60,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-let questions = [];
-let currentQuestion = 0;
-let answers = [];
-let role = '';
-let difficulty = '';
-let mediaRecorder = null;
-let audioChunks = [];
-let recognition = null;
-let startTime = Date.now();
-
-// Initialize Speech Recognition
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    
-    recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            transcript += event.results[i][0].transcript;
-        }
-        document.getElementById('transcriptText').textContent = transcript;
-        answers[currentQuestion].text = transcript;
-    };
-    
-    recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        updateStatus('Error: ' + event.error, 'ready');
-    };
-}
-
-// Load interview data
-document.addEventListener('DOMContentLoaded', async () => {
-    role = sessionStorage.getItem('selectedRole');
-    difficulty = sessionStorage.getItem('selectedDifficulty');
-    
-    if (!role || !difficulty) {
-        Toast.error('Interview setup incomplete. Redirecting...');
-        setTimeout(() => window.location.href = '/start-interview', 2000);
-        return;
-    }
-    
-    Toast.info('Loading AI-generated questions...');
-    await loadQuestions();
-});
-
-async function loadQuestions() {
-    try {
-        const response = await fetch(`/api/questions?role=${encodeURIComponent(role)}&difficulty=${encodeURIComponent(difficulty)}&use_ai=true`);
-        const data = await response.json();
-        
-        if (data.success) {
-            questions = data.questions;
-            answers = questions.map(q => ({ type: 'voice', text: '', audio: null }));
-            
-            console.log('Questions loaded:', questions);
-            renderQuestion();
-            
-            // Wait a bit then speak the question
-            setTimeout(() => {
-                speakQuestion();
-                Toast.success('Question loaded! Listen and click record to answer.');
-            }, 500);
-        } else {
-            throw new Error('Failed to load questions');
-        }
-    } catch (error) {
-        console.error('Load questions error:', error);
-        Toast.error('Failed to load questions. Please try again.');
-        setTimeout(() => window.location.href = '/start-interview', 2000);
-    }
-}
-
-function renderQuestion() {
-    if (!questions || questions.length === 0) {
-        console.error('No questions available');
-        return;
-    }
-    
-    const question = questions[currentQuestion];
-    console.log('Rendering question:', question);
-    
-    // Get question text from different possible formats
-    const questionText = question.question || question.text || 'Question not available';
-    
-    document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
-    document.getElementById('questionText').textContent = questionText;
-    document.getElementById('transcriptText').textContent = answers[currentQuestion].text || 'Your spoken answer will appear here...';
-    
-    // Update progress
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
-    document.getElementById('progressFill').style.width = progress + '%';
-    document.getElementById('progressText').textContent = Math.round(progress) + '%';
-    
-    // Update buttons
-    document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'block' : 'none';
-    document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'Submit Interview' : 'Next →';
-    document.getElementById('nextBtn').disabled = !answers[currentQuestion].text;
-    
-    // Reset status
-    updateStatus('🎤 Ready to record - Click the microphone button', 'ready');
-}
-
-function speakQuestion() {
-    if ('speechSynthesis' in window) {
-        // Stop any ongoing speech
-        speechSynthesis.cancel();
-        
-        const question = questions[currentQuestion];
-        const questionText = question.question || question.text || '';
-        
-        if (questionText) {
-            const utterance = new SpeechSynthesisUtterance(questionText);
-            utterance.rate = 0.85;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            
-            utterance.onstart = () => {
-                updateStatus('🔊 AI is speaking the question...', 'processing');
-                document.getElementById('pulseRing').style.display = 'block';
-            };
-            
-            utterance.onend = () => {
-                updateStatus('🎤 Question complete - Click record to answer', 'ready');
-                document.getElementById('pulseRing').style.display = 'none';
-            };
-            
-            speechSynthesis.speak(utterance);
-            console.log('Speaking question:', questionText);
-        } else {
-            console.error('No question text to speak');
-        }
-    } else {
-        console.error('Speech synthesis not supported');
-        Toast.warning('Text-to-speech not supported in your browser');
-    }
-}
-
-function playQuestion() {
-    speakQuestion();
-}
-
-function startRecording() {
-    if (!recognition) {
-        Toast.error('Speech recognition not supported in your browser');
-        return;
-    }
-    
-    try {
-        recognition.start();
-        document.getElementById('recordBtn').classList.add('recording');
-        document.getElementById('recordBtn').style.display = 'none';
-        document.getElementById('stopBtn').style.display = 'block';
-        document.getElementById('pulseRing').style.display = 'block';
-        updateStatus('🎤 Listening... Speak your answer', 'listening');
-    } catch (error) {
-        console.error('Recording error:', error);
-    }
-}
-
-function stopRecording() {
-    if (recognition) {
-        recognition.stop();
-    }
-    
-    document.getElementById('recordBtn').classList.remove('recording');
-    document.getElementById('recordBtn').style.display = 'block';
-    document.getElementById('stopBtn').style.display = 'none';
-    document.getElementById('pulseRing').style.display = 'none';
-    document.getElementById('nextBtn').disabled = false;
-    updateStatus('✓ Answer recorded - Click Next to continue', 'ready');
-}
-
-function updateStatus(message, type) {
-    const indicator = document.getElementById('statusIndicator');
-    indicator.textContent = message;
-    indicator.className = 'status-indicator status-' + type;
-}
-
-function previousQuestion() {
-    if (currentQuestion > 0) {
-        currentQuestion--;
-        renderQuestion();
-    }
-}
-
-function nextQuestion() {
-    const currentAnswer = answers[currentQuestion].text;
-    
-    if (!currentAnswer || currentAnswer.trim().length < 10) {
-        Toast.warning('Please record a proper answer before proceeding (at least 10 words)');
-        return;
-    }
-    
-    if (currentQuestion < questions.length - 1) {
-        currentQuestion++;
-        renderQuestion();
-        
-        // Speak next question after a short delay
-        setTimeout(() => {
-            speakQuestion();
-        }, 500);
-    } else {
-        submitInterview();
-    }
-}
-
-async function submitInterview() {
-    Toast.info('Evaluating your voice interview... This may take a moment.');
-    document.getElementById('nextBtn').disabled = true;
-    document.getElementById('nextBtn').textContent = 'Evaluating...';
-    
-    try {
-        const user = JSON.parse(localStorage.getItem('user') || 'null');
-        const userId = user?.id;
-        
-        if (!userId) {
-            Toast.error('User session expired. Please login again.');
-            setTimeout(() => window.location.href = '/login', 2000);
-            return;
-        }
-        
-        const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-        
-        const response = await fetch('/api/submit-voice-interview', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                answers: answers,
-                questions: questions,
-                role: role,
-                difficulty: difficulty,
-                user_id: userId,
-                time_taken: timeTaken,
-                interview_type: 'voice'
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            Toast.success('Voice interview completed! Redirecting to results...');
-            sessionStorage.setItem('lastResultId', data.id);
-            setTimeout(() => {
-                window.location.href = `/results/${data.id}`;
-            }, 1500);
-        } else {
-            throw new Error(data.message || 'Submission failed');
-        }
-    } catch (error) {
-        console.error('Submit error:', error);
-        Toast.error('Failed to submit interview. Please try again.');
-        document.getElementById('nextBtn').disabled = false;
-        document.getElementById('nextBtn').textContent = 'Submit Interview';
-    }
-}
-</script>
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/voice_interview.js') }}"></script>
 {% endblock %}

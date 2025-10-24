@@ -1,11 +1,11 @@
-# 🚀 Complete Setup Guide - InterviewAce
+# Complete Setup Guide - InterviewAce
 
 > **Step-by-step manual to set up InterviewAce from scratch**  
 > Follow this guide to get the application running with all features enabled.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Prerequisites](#prerequisites)
 2. [PostgreSQL Setup](#postgresql-setup)
@@ -739,7 +739,7 @@ python app.py
 
 ---
 
-## 🎯 Production Deployment
+## Production Deployment
 
 ### For Production Environment:
 
@@ -774,7 +774,7 @@ python app.py
 
 ---
 
-## ✅ Setup Checklist
+## Setup Checklist
 
 Before running the application, ensure:
 
@@ -796,9 +796,9 @@ Before running the application, ensure:
 
 ---
 
-## 🎉 Congratulations!
+## Setup Complete!
 
-You've successfully set up InterviewAce! 
+successfully set up InterviewAce! 
 
 **Next Steps:**
 - Take your first mock interview
@@ -813,4 +813,4 @@ You've successfully set up InterviewAce!
 
 ---
 
-**Happy Interviewing! 🚀**
+

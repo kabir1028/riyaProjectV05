@@ -1,0 +1,142 @@
+.voice-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.voice-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.ai-avatar-large {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 2rem;
+    position: relative;
+}
+
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.question-display {
+    text-align: center;
+    margin-bottom: 2rem;
+    min-height: 100px;
+}
+
+.question-text {
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.voice-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.voice-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 2rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.voice-btn:hover {
+    transform: scale(1.1);
+}
+
+.btn-record {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.btn-record.recording {
+    animation: recordPulse 1s infinite;
+}
+
+@keyframes recordPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+}
+
+.btn-stop {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-play {
+    background: #3b82f6;
+    color: white;
+}
+
+.transcript-box {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 100px;
+    margin: 2rem 0;
+}
+
+.transcript-text {
+    color: #374151;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.status-indicator {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    font-weight: 600;
+}
+
+.status-listening {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.status-processing {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+.status-ready {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.progress-info {
+    text-align: center;
+    color: #6b7280;
+    margin: 1rem 0;
+}

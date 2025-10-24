@@ -23,6 +23,11 @@ class UserService:
                 is_verified = existing_user[3]
                 has_password = existing_user[4] is not None
                 
+                if auth_provider == 'local':
+                    cursor.close()
+                    conn.close()
+                    return {'success': False, 'message': 'Email already registered'}
+                
                 if auth_provider != 'local':
                     if not has_password:
                         random_password = secrets.token_urlsafe(32)
@@ -68,7 +73,7 @@ class UserService:
             if not is_guest and auth_provider == 'local':
                 EmailService.send_verification_email(email, verification_token)
             
-            message = 'Account created! Please check your email to verify.' if auth_provider == 'local' else 'Login successful!'
+            message = 'Account created successfully, check your email for verification' if auth_provider == 'local' else 'Login successful!'
             
             return {
                 'success': True,
